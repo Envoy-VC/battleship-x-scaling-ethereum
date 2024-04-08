@@ -1,0 +1,12 @@
+---
+program: main
+inputs:
+ secrets:
+  int1:
+   SecretInteger: '30'
+  int2:
+   SecretInteger: '3'
+ public_variables: {}
+expected_outputs:
+ result:
+  SecretInteger: '33'
