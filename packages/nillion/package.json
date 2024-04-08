@@ -3,10 +3,10 @@
 	"version": "1.0.0",
 	"description": "",
 	"scripts": {
-		"test": "echo \"Error: no test specified\" && exit 1",
 		"dev": "bash ./start-devnet.sh",
 		"create-venv": "bash ./create-venv.sh",
 		"build": "cd programs && nada build",
+		"test": "cd programs && nada test",
 		"stop": "pkill -9 -f nillion-devnet"
 	},
 	"keywords": [],

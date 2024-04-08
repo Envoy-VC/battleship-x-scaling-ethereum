@@ -1,13 +1,8 @@
-name = "next-project-programs"
+name = "battleship-x-programs"
 version = "0.1.0"
-authors = [""]
+authors = ["Vedant Chainani"]
 
 [[programs]]
-path = "./src/main.py"
+path = "src/main.py"
 name = "main"
-prime_size = 128
-
-[[programs]]
-path = "./src/addition_simple.py"
-name = "addition_simple"
 prime_size = 128
