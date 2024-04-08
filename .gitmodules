@@ -1,3 +1,6 @@
 [submodule "packages/battleship-contracts/lib/forge-std"]
 	path = packages/battleship-contracts/lib/forge-std
 	url = https://github.com/foundry-rs/forge-std
+[submodule "packages/contracts/lib/forge-std"]
+	path = packages/contracts/lib/forge-std
+	url = https://github.com/foundry-rs/forge-std
