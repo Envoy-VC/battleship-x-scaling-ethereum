@@ -31,6 +31,7 @@ contract BattleshipX is RMRKAbstractNestable, RMRKTokenURIPerToken, RMRKSoulboun
     mapping(uint256 tokenId => uint256) private _ownedTokensIndex;
     uint256[] private _allTokens;
     mapping(uint256 tokenId => uint256) private _allTokensIndex;
+    mapping(address => bool) private _autoAcceptCollection;
 
     // Constructor
     constructor(
@@ -52,15 +53,15 @@ contract BattleshipX is RMRKAbstractNestable, RMRKTokenURIPerToken, RMRKSoulboun
     /// @notice This function is used to mint the initial user NFT and the nested battleships.
     /// @param _user Address of the user to mint the NFTs to.
     /// @param username Username of the user.
-    /// @return The ID of the user NFT.
-    function register(address _user, string memory username) public payable returns (uint256) {
+    /// @return The User NFT Token ID
+    function register(address _user, string memory username) public returns (uint256) {
         usernameAvailable(username);
         newUser(_user);
 
         users[username] = User(_user, true);
+
         // Mint the User NFT
         (uint256 userTokenId,) = _prepareMint(1);
-
         string memory userURI = BattleshipURI.constructUserURI();
         _safeMint(_user, userTokenId, "");
         _setTokenURI(userTokenId, userURI);
@@ -77,8 +78,7 @@ contract BattleshipX is RMRKAbstractNestable, RMRKTokenURIPerToken, RMRKSoulboun
         (uint256 nextToken, uint256 totalSupplyOffset) = _prepareMint(5);
 
         for (uint256 i = nextToken; i < totalSupplyOffset;) {
-            console2.log(nextToken);
-            _nestMint(_user, i, userTokenId, "");
+            _nestMint(address(this), i, userTokenId, "");
             _setTokenURI(i, uris[i - nextToken]);
             unchecked {
                 ++i;
@@ -143,6 +143,7 @@ contract BattleshipX is RMRKAbstractNestable, RMRKTokenURIPerToken, RMRKSoulboun
         } else if (from != to) {
             _removeTokenFromOwnerEnumeration(from, tokenId);
         }
+
         if (to == address(0)) {
             _removeTokenFromAllTokensEnumeration(tokenId);
         } else if (from != to) {
@@ -178,7 +179,7 @@ contract BattleshipX is RMRKAbstractNestable, RMRKTokenURIPerToken, RMRKSoulboun
      * @param tokenId uint256 ID of the token to be added to the tokens list of the given address
      */
     function _addTokenToOwnerEnumeration(address to, uint256 tokenId) private {
-        uint256 length = balanceOf(to) - 1;
+        uint256 length = balanceOf(to) == 0 ? 0 : balanceOf(to) - 1;
         _ownedTokens[to][length] = tokenId;
         _ownedTokensIndex[tokenId] = length;
     }
@@ -243,5 +244,20 @@ contract BattleshipX is RMRKAbstractNestable, RMRKTokenURIPerToken, RMRKSoulboun
         // This also deletes the contents at the last position of the array
         delete _allTokensIndex[tokenId];
         _allTokens.pop();
+    }
+
+    function setAutoAcceptCollection(address collection, bool autoAccept) public virtual onlyOwnerOrContributor {
+        _autoAcceptCollection[collection] = autoAccept;
+    }
+
+    function _afterAddChild(uint256 tokenId, address childAddress, uint256 childId, bytes memory)
+        internal
+        virtual
+        override
+    {
+        // Auto accept children if they are from known collections
+        if (_autoAcceptCollection[childAddress]) {
+            _acceptChild(tokenId, _pendingChildren[tokenId].length - 1, childAddress, childId);
+        }
     }
 }
