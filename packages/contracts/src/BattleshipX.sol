@@ -2,33 +2,49 @@
 
 pragma solidity ^0.8.21;
 
-import {RMRKAbstractNestableMultiAsset} from
-    "@rmrk-team/evm-contracts/contracts/implementations/abstract/RMRKAbstractNestableMultiAsset.sol";
+import {RMRKAbstractNestable} from
+    "@rmrk-team/evm-contracts/contracts/implementations/abstract/RMRKAbstractNestable.sol";
 import {RMRKTokenURIPerToken} from "@rmrk-team/evm-contracts/contracts/implementations/utils/RMRKTokenURIPerToken.sol";
 import {RMRKImplementationBase} from
     "@rmrk-team/evm-contracts/contracts/implementations/utils/RMRKImplementationBase.sol";
+import {RMRKSoulbound} from "@rmrk-team/evm-contracts/contracts/RMRK/extension/soulbound/RMRKSoulbound.sol";
+import {IERC721Enumerable} from "@openzeppelin/contracts/token/ERC721/extensions/IERC721Enumerable.sol";
+import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 
-contract BattleshipX is RMRKAbstractNestableMultiAsset, RMRKTokenURIPerToken {
-    // errors
-    error RMRKWrongValueSent();
-    // Events
-    // Variables
+import {BattleshipURI} from "./lib/BattleshipURI.sol";
 
-    uint256 private _pricePerMint;
-    mapping(address => bool) private _autoAcceptCollection;
+error ERC721OutOfBoundsIndex(address owner, uint256 index);
+error RMRKWrongValueSent();
+
+struct User {
+    address owner;
+    bool taken;
+}
+
+contract BattleshipX is RMRKAbstractNestable, RMRKTokenURIPerToken, RMRKSoulbound {
+    mapping(address owner => mapping(uint256 index => uint256)) private _ownedTokens;
+    mapping(string username => User) private _owned;
+    mapping(uint256 tokenId => uint256) private _ownedTokensIndex;
+    uint256[] private _allTokens;
+    mapping(uint256 tokenId => uint256) private _allTokensIndex;
 
     // Constructor
     constructor(
         string memory collectionMetadata,
         uint256 maxSupply,
         address royaltyRecipient,
-        uint16 royaltyPercentageBps,
-        uint256 pricePerMint_
-    ) RMRKImplementationBase("MyNFT2", "NFT2", collectionMetadata, maxSupply, royaltyRecipient, royaltyPercentageBps) {
-        _pricePerMint = pricePerMint_;
-    }
+        uint16 royaltyPercentageBps
+    )
+        RMRKImplementationBase(
+            "BattleshipX",
+            "BATTLESHIP-X",
+            collectionMetadata,
+            maxSupply,
+            royaltyRecipient,
+            royaltyPercentageBps
+        )
+    {}
 
-    // Methods
     // Suggested Mint Functions
     /**
      * @notice Used to mint the desired number of tokens to the specified address.
@@ -40,7 +56,6 @@ contract BattleshipX is RMRKAbstractNestableMultiAsset, RMRKTokenURIPerToken {
      */
     function mint(address to, uint256 numToMint) public payable returns (uint256) {
         (uint256 nextToken, uint256 totalSupplyOffset) = _prepareMint(numToMint);
-        _chargeMints(numToMint);
 
         for (uint256 i = nextToken; i < totalSupplyOffset;) {
             _safeMint(to, i, "");
@@ -63,7 +78,6 @@ contract BattleshipX is RMRKAbstractNestableMultiAsset, RMRKTokenURIPerToken {
      */
     function nestMint(address to, uint256 numToMint, uint256 destinationId) public payable returns (uint256) {
         (uint256 nextToken, uint256 totalSupplyOffset) = _prepareMint(numToMint);
-        _chargeMints(numToMint);
 
         for (uint256 i = nextToken; i < totalSupplyOffset;) {
             _nestMint(to, i, destinationId, "");
@@ -73,19 +87,6 @@ contract BattleshipX is RMRKAbstractNestableMultiAsset, RMRKTokenURIPerToken {
         }
 
         return nextToken;
-    }
-
-    function _chargeMints(uint256 numToMint) internal {
-        uint256 price = numToMint * _pricePerMint;
-        if (price != msg.value) revert RMRKWrongValueSent();
-    }
-
-    /**
-     * @notice Used to retrieve the price per mint.
-     * @return The price per mint of a single token expressed in the lowest denomination of a native currency
-     */
-    function pricePerMint() public view returns (uint256) {
-        return _pricePerMint;
     }
 
     /**
@@ -108,54 +109,130 @@ contract BattleshipX is RMRKAbstractNestableMultiAsset, RMRKTokenURIPerToken {
         require(success, "Transfer failed.");
     }
 
-    function setAutoAcceptCollection(address collection, bool autoAccept) public virtual onlyOwnerOrContributor {
-        _autoAcceptCollection[collection] = autoAccept;
-    }
-
-    function _afterAddChild(uint256 tokenId, address childAddress, uint256 childId, bytes memory)
-        internal
-        virtual
-        override
-    {
-        // Auto accept children if they are from known collections
-        if (_autoAcceptCollection[childAddress]) {
-            _acceptChild(tokenId, _pendingChildren[tokenId].length - 1, childAddress, childId);
-        }
-    }
-
-    function mintWithAssets(address to, uint64[] memory assetIds) public virtual onlyOwnerOrContributor {
-        (uint256 tokenId,) = _prepareMint(1);
-        _safeMint(to, tokenId, "");
-        for (uint256 i; i < assetIds.length;) {
-            _addAssetToToken(tokenId, assetIds[i], 0);
-            // Only first asset or assets added by token owner are auto-accepted, so we might need to accept for the rest of cases
-            if (_pendingAssets[tokenId].length != 0) {
-                _acceptAsset(tokenId, 0, assetIds[i]);
-            }
-            unchecked {
-                ++i;
-            }
-        }
-    }
-
-    function nestMintWithAssets(address parentContract, uint256 destinationId, uint64[] memory assetIds)
+    /**
+     * @inheritdoc IERC165
+     */
+    function supportsInterface(bytes4 interfaceId)
         public
-        virtual
-        onlyOwnerOrContributor
+        view
+        override(RMRKSoulbound, RMRKAbstractNestable)
+        returns (bool)
     {
-        (uint256 tokenId,) = _prepareMint(1);
-        uint256 length = assetIds.length;
-        _nestMint(parentContract, tokenId, destinationId, "");
-        for (uint256 i; i < length;) {
-            uint64 assetId = assetIds[i];
-            _addAssetToToken(tokenId, assetId, 0);
-            // Only first asset or assets added by token owner are auto-accepted, so we might need to accept for the rest of cases
-            if (_pendingAssets[tokenId].length != 0) {
-                _acceptAsset(tokenId, 0, assetIds[i]);
-            }
-            unchecked {
-                ++i;
-            }
+        return type(IERC721Enumerable).interfaceId == interfaceId || RMRKAbstractNestable.supportsInterface(interfaceId)
+            || RMRKSoulbound.supportsInterface(interfaceId);
+    }
+
+    function _beforeTokenTransfer(address from, address to, uint256 tokenId)
+        internal
+        override(RMRKSoulbound, RMRKAbstractNestable)
+    {
+        RMRKSoulbound._beforeTokenTransfer(from, to, tokenId);
+        RMRKAbstractNestable._beforeTokenTransfer(from, to, tokenId);
+
+        if (from == address(0)) {
+            _addTokenToAllTokensEnumeration(tokenId);
+        } else if (from != to) {
+            _removeTokenFromOwnerEnumeration(from, tokenId);
         }
+        if (to == address(0)) {
+            _removeTokenFromAllTokensEnumeration(tokenId);
+        } else if (from != to) {
+            _addTokenToOwnerEnumeration(to, tokenId);
+        }
+    }
+
+    // IERC721Enumerable (Based on OpenZeppelin implementation)
+
+    /**
+     * @dev See {IERC721Enumerable-tokenOfOwnerByIndex}.
+     */
+    function tokenOfOwnerByIndex(address owner, uint256 index) public view virtual returns (uint256) {
+        if (index >= balanceOf(owner)) {
+            revert ERC721OutOfBoundsIndex(owner, index);
+        }
+        return _ownedTokens[owner][index];
+    }
+
+    /**
+     * @dev See {IERC721Enumerable-tokenByIndex}.
+     */
+    function tokenByIndex(uint256 index) public view virtual returns (uint256) {
+        if (index >= totalSupply()) {
+            revert ERC721OutOfBoundsIndex(address(0), index);
+        }
+        return _allTokens[index];
+    }
+
+    /**
+     * @dev Private function to add a token to this extension's ownership-tracking data structures.
+     * @param to address representing the new owner of the given token ID
+     * @param tokenId uint256 ID of the token to be added to the tokens list of the given address
+     */
+    function _addTokenToOwnerEnumeration(address to, uint256 tokenId) private {
+        uint256 length = balanceOf(to) - 1;
+        _ownedTokens[to][length] = tokenId;
+        _ownedTokensIndex[tokenId] = length;
+    }
+
+    /**
+     * @dev Private function to add a token to this extension's token tracking data structures.
+     * @param tokenId uint256 ID of the token to be added to the tokens list
+     */
+    function _addTokenToAllTokensEnumeration(uint256 tokenId) private {
+        _allTokensIndex[tokenId] = _allTokens.length;
+        _allTokens.push(tokenId);
+    }
+
+    /**
+     * @dev Private function to remove a token from this extension's ownership-tracking data structures. Note that
+     * while the token is not assigned a new owner, the `_ownedTokensIndex` mapping is _not_ updated: this allows for
+     * gas optimizations e.g. when performing a transfer operation (avoiding double writes).
+     * This has O(1) time complexity, but alters the order of the _ownedTokens array.
+     * @param from address representing the previous owner of the given token ID
+     * @param tokenId uint256 ID of the token to be removed from the tokens list of the given address
+     */
+    function _removeTokenFromOwnerEnumeration(address from, uint256 tokenId) private {
+        // To prevent a gap in from's tokens array, we store the last token in the index of the token to delete, and
+        // then delete the last slot (swap and pop).
+
+        uint256 lastTokenIndex = balanceOf(from);
+        uint256 tokenIndex = _ownedTokensIndex[tokenId];
+
+        // When the token to delete is the last token, the swap operation is unnecessary
+        if (tokenIndex != lastTokenIndex) {
+            uint256 lastTokenId = _ownedTokens[from][lastTokenIndex];
+
+            _ownedTokens[from][tokenIndex] = lastTokenId; // Move the last token to the slot of the to-delete token
+            _ownedTokensIndex[lastTokenId] = tokenIndex; // Update the moved token's index
+        }
+
+        // This also deletes the contents at the last position of the array
+        delete _ownedTokensIndex[tokenId];
+        delete _ownedTokens[from][lastTokenIndex];
+    }
+
+    /**
+     * @dev Private function to remove a token from this extension's token tracking data structures.
+     * This has O(1) time complexity, but alters the order of the _allTokens array.
+     * @param tokenId uint256 ID of the token to be removed from the tokens list
+     */
+    function _removeTokenFromAllTokensEnumeration(uint256 tokenId) private {
+        // To prevent a gap in the tokens array, we store the last token in the index of the token to delete, and
+        // then delete the last slot (swap and pop).
+
+        uint256 lastTokenIndex = _allTokens.length - 1;
+        uint256 tokenIndex = _allTokensIndex[tokenId];
+
+        // When the token to delete is the last token, the swap operation is unnecessary. However, since this occurs so
+        // rarely (when the last minted token is burnt) that we still do the swap here to avoid the gas cost of adding
+        // an 'if' statement (like in _removeTokenFromOwnerEnumeration)
+        uint256 lastTokenId = _allTokens[lastTokenIndex];
+
+        _allTokens[tokenIndex] = lastTokenId; // Move the last token to the slot of the to-delete token
+        _allTokensIndex[lastTokenId] = tokenIndex; // Update the moved token's index
+
+        // This also deletes the contents at the last position of the array
+        delete _allTokensIndex[tokenId];
+        _allTokens.pop();
     }
 }
