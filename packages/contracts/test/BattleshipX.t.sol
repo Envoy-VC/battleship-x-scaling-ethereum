@@ -9,14 +9,20 @@ import {BattleshipX} from "../src/BattleshipX.sol";
 contract CounterTest is Test {
     BattleshipX public battleship;
     VmSafe.Wallet public owner;
+    VmSafe.Wallet public user;
 
     function setUp() public {
         owner = vm.createWallet("owner");
-        battleship = new BattleshipX("", 10000, owner.addr, 0, 0);
+        user = vm.createWallet("user");
+        battleship = new BattleshipX("", 10000, owner.addr, 0);
         console2.log(address(battleship));
     }
 
-    function testCreateGame() public {
-        console2.log(address(battleship));
+    function test_registerUser() external {
+        battleship.register(user.addr, "envoy1084");
+        uint256 tokenId = battleship._ownedTokens(user.addr, 0);
+        console2.log("Token ID: ", tokenId);
+
+        // assertEq(battleship.balanceOf(user.addr), 1);
     }
 }

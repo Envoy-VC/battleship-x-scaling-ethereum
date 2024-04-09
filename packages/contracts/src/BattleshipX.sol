@@ -15,6 +15,10 @@ import {BattleshipURI} from "./lib/BattleshipURI.sol";
 
 error ERC721OutOfBoundsIndex(address owner, uint256 index);
 error RMRKWrongValueSent();
+error UsernameTaken();
+error NotANewUser();
+
+import {console2} from "forge-std/Test.sol";
 
 struct User {
     address owner;
@@ -22,8 +26,8 @@ struct User {
 }
 
 contract BattleshipX is RMRKAbstractNestable, RMRKTokenURIPerToken, RMRKSoulbound {
-    mapping(address owner => mapping(uint256 index => uint256)) private _ownedTokens;
-    mapping(string username => User) private _owned;
+    mapping(address owner => mapping(uint256 index => uint256)) public _ownedTokens;
+    mapping(string username => User) public users;
     mapping(uint256 tokenId => uint256) private _ownedTokensIndex;
     uint256[] private _allTokens;
     mapping(uint256 tokenId => uint256) private _allTokensIndex;
@@ -45,48 +49,53 @@ contract BattleshipX is RMRKAbstractNestable, RMRKTokenURIPerToken, RMRKSoulboun
         )
     {}
 
-    // Suggested Mint Functions
-    /**
-     * @notice Used to mint the desired number of tokens to the specified address.
-     * @dev The "data" value of the "_safeMint" method is set to an empty value.
-     * @dev Can only be called while the open sale is open.
-     * @param to Address to which to mint the token
-     * @param numToMint Number of tokens to mint
-     * @return The ID of the first token to be minted in the current minting cycle
-     */
-    function mint(address to, uint256 numToMint) public payable returns (uint256) {
-        (uint256 nextToken, uint256 totalSupplyOffset) = _prepareMint(numToMint);
+    /// @notice This function is used to mint the initial user NFT and the nested battleships.
+    /// @param _user Address of the user to mint the NFTs to.
+    /// @param username Username of the user.
+    /// @return The ID of the user NFT.
+    function register(address _user, string memory username) public payable returns (uint256) {
+        usernameAvailable(username);
+        newUser(_user);
+
+        users[username] = User(_user, true);
+        // Mint the User NFT
+        (uint256 userTokenId,) = _prepareMint(1);
+
+        string memory userURI = BattleshipURI.constructUserURI();
+        _safeMint(_user, userTokenId, "");
+        _setTokenURI(userTokenId, userURI);
+
+        // Mint Nested Battleships
+        string[5] memory uris = [
+            BattleshipURI.constructBattleshipURI(),
+            BattleshipURI.constructCarrierURI(),
+            BattleshipURI.constructDestroyerURI(),
+            BattleshipURI.constructSubmarineURI(),
+            BattleshipURI.constructCruiserURI()
+        ];
+
+        (uint256 nextToken, uint256 totalSupplyOffset) = _prepareMint(5);
 
         for (uint256 i = nextToken; i < totalSupplyOffset;) {
-            _safeMint(to, i, "");
+            console2.log(nextToken);
+            _nestMint(_user, i, userTokenId, "");
+            _setTokenURI(i, uris[i - nextToken]);
             unchecked {
                 ++i;
             }
         }
 
-        return nextToken;
+        return userTokenId;
     }
 
-    /**
-     * @notice Used to mint a desired number of child tokens to a given parent token.
-     * @dev The "data" value of the "_safeMint" method is set to an empty value.
-     * @dev Can only be called while the open sale is open.
-     * @param to Address of the collection smart contract of the token into which to mint the child token
-     * @param numToMint Number of tokens to mint
-     * @param destinationId ID of the token into which to mint the new child token
-     * @return The ID of the first token to be minted in the current minting cycle
-     */
-    function nestMint(address to, uint256 numToMint, uint256 destinationId) public payable returns (uint256) {
-        (uint256 nextToken, uint256 totalSupplyOffset) = _prepareMint(numToMint);
+    function usernameAvailable(string memory _name) public view {
+        bool exists = users[_name].taken;
+        if (exists) revert UsernameTaken();
+    }
 
-        for (uint256 i = nextToken; i < totalSupplyOffset;) {
-            _nestMint(to, i, destinationId, "");
-            unchecked {
-                ++i;
-            }
-        }
-
-        return nextToken;
+    function newUser(address _user) public view {
+        uint256 balance = balanceOf(_user);
+        if (balance > 0) revert NotANewUser();
     }
 
     /**
