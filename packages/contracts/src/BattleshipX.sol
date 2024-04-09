@@ -179,7 +179,7 @@ contract BattleshipX is RMRKAbstractNestable, RMRKTokenURIPerToken, RMRKSoulboun
      * @param tokenId uint256 ID of the token to be added to the tokens list of the given address
      */
     function _addTokenToOwnerEnumeration(address to, uint256 tokenId) private {
-        uint256 length = balanceOf(to) == 0 ? 0 : balanceOf(to) - 1;
+        uint256 length = balanceOf(to);
         _ownedTokens[to][length] = tokenId;
         _ownedTokensIndex[tokenId] = length;
     }
@@ -205,7 +205,7 @@ contract BattleshipX is RMRKAbstractNestable, RMRKTokenURIPerToken, RMRKSoulboun
         // To prevent a gap in from's tokens array, we store the last token in the index of the token to delete, and
         // then delete the last slot (swap and pop).
 
-        uint256 lastTokenIndex = balanceOf(from);
+        uint256 lastTokenIndex = balanceOf(from) - 1;
         uint256 tokenIndex = _ownedTokensIndex[tokenId];
 
         // When the token to delete is the last token, the swap operation is unnecessary
