@@ -3,8 +3,10 @@
 	"version": "1.0.0",
 	"description": "",
 	"scripts": {
-		"dev": "bash ./start-devnet.sh",
+		"dev": "pnpm create-venv && pnpm start-devnet && pnpm build && pnpm start-server",
 		"create-venv": "bash ./create-venv.sh",
+		"start-devnet": "bash ./start-devnet.sh",
+		"start-server": "python src/main.py",
 		"build": "cd programs && nada build",
 		"test": "cd programs && nada test",
 		"stop": "pkill -9 -f nillion-devnet"
