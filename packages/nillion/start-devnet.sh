@@ -15,7 +15,7 @@ done
 OUTFILE=$(mktemp);
 PIDFILE=$(mktemp);
 
-"$NILLION_DEVNET" --seed random12345 >"$OUTFILE" & echo $! >"$PIDFILE";
+"$NILLION_DEVNET" --seed random121231232 >"$OUTFILE" & echo $! >"$PIDFILE";
 ENV_TO_UPDATE=".env"
 echo "--------------------"
 echo "Updating your ${ENV_TO_UPDATE} files with nillion-devnet environment info... This may take a minute."

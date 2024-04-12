@@ -1,16 +1,16 @@
 import os
 import py_nillion_client as nillion
-from helpers.config import get_payments_config
+from helpers.config import get_payments_config, getNodeKeyFromFile, getUserKeyFromFile, node_config
 
 
-def create_client(userkey, nodekey):
+def create_client():
     bootnodes = [os.getenv("NILLION_BOOTNODE_MULTIADDRESS")]
     payments_config = get_payments_config()
 
     return nillion.NillionClient(
-        nodekey,
+        getNodeKeyFromFile(node_config["nodekey_file"]),
         bootnodes,
         nillion.ConnectionMode.relay(),
-        userkey,
+        getUserKeyFromFile(node_config["userkey_file"]),
         payments_config,
     )

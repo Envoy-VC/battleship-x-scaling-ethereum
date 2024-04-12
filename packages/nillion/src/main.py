@@ -1,11 +1,21 @@
 import uvicorn
 from fastapi import FastAPI
-import asyncio
+from pydantic import BaseModel
+from fastapi.middleware.cors import CORSMiddleware
 
-from store import store_program
+
+from lib.compute import compute
 
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @app.get("/")
@@ -13,6 +23,16 @@ def read_root():
     return {"Hello": "World"}
 
 
+class ComputeParams(BaseModel):
+    row: list
+    position: int
+
+
+@app.post('/compute')
+async def compute_endpoint(params: ComputeParams):
+    result = await compute(params.row, params.position)
+    return {"result": result}
+
+
 if __name__ == "__main__":
-    asyncio.run(store_program())
     uvicorn.run(app)
