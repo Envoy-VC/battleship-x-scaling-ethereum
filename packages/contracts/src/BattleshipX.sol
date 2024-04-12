@@ -14,11 +14,8 @@ import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import {BattleshipURI} from "./lib/BattleshipURI.sol";
 
 error ERC721OutOfBoundsIndex(address owner, uint256 index);
-error RMRKWrongValueSent();
 error UsernameTaken();
 error NotANewUser();
-
-import {console2} from "forge-std/Test.sol";
 
 struct User {
     address owner;
@@ -88,11 +85,15 @@ contract BattleshipX is RMRKAbstractNestable, RMRKTokenURIPerToken, RMRKSoulboun
         return userTokenId;
     }
 
+    /// @notice This method is used to check the availability of username
+    /// @param _name The username to check
     function usernameAvailable(string memory _name) public view {
         bool exists = users[_name].taken;
         if (exists) revert UsernameTaken();
     }
 
+    /// @notice This method is used to check if the user already exists
+    /// @param _user The address of the user to check
     function newUser(address _user) public view {
         uint256 balance = balanceOf(_user);
         if (balance > 0) revert NotANewUser();

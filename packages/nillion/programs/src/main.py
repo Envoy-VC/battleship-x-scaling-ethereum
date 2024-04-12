@@ -3,10 +3,20 @@ from nada_dsl import *
 
 def nada_main():
     party1 = Party(name="Party1")
-    int1 = SecretInteger(Input(name="int1", party=party1))
-    int2 = SecretInteger(Input(name="int2", party=party1))
+    # # Input the Battleship Game Row of the Opponent
+    row = Array(SecretInteger(Input(name="row", party=party1)), size=10)
 
-    # Computation
-    result = int1 + int2
+    # # Input the attack x coordinates
+    position = SecretInteger(Input(name="position", party=party1))
 
-    return [Output(result, "result", party1)]
+    # find if 2*10 + position is in row
+
+    @nada_fn
+    def check_exists(a: SecretInteger, b: SecretInteger) -> SecretInteger:
+        return a * (position - b)
+
+    result = row.reduce(check_exists, Integer(1))
+
+    out = Output(result, "out", party1)
+
+    return [out]

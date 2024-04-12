@@ -1,0 +1,24 @@
+---
+program: main
+inputs:
+ secrets:
+  row:
+   Array:
+    inner_type: SecretInteger
+    values:
+     - SecretInteger: '10'
+     - SecretInteger: '11'
+     - SecretInteger: '12'
+     - SecretInteger: '23'
+     - SecretInteger: '14'
+     - SecretInteger: '15'
+     - SecretInteger: '16'
+     - SecretInteger: '17'
+     - SecretInteger: '28'
+     - SecretInteger: '19'
+  position:
+   SecretInteger: '23'
+ public_variables: {}
+expected_outputs:
+ out:
+  SecretInteger: '0'
