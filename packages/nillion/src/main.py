@@ -1,5 +1,6 @@
 import uvicorn
 from fastapi import FastAPI
+from typing import List
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -24,7 +25,7 @@ def read_root():
 
 
 class ComputeParams(BaseModel):
-    row: list
+    row: List[int]
     position: int
 
 
