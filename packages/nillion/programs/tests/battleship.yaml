@@ -1,23 +1,45 @@
----
 program: main
 inputs:
  secrets:
-  row:
+  carrier:
    Array:
     inner_type: SecretInteger
     values:
-     - SecretInteger: '10'
-     - SecretInteger: '11'
-     - SecretInteger: '12'
-     - SecretInteger: '23'
-     - SecretInteger: '14'
-     - SecretInteger: '15'
-     - SecretInteger: '16'
-     - SecretInteger: '17'
-     - SecretInteger: '28'
-     - SecretInteger: '19'
+     - SecretInteger: '134'
+     - SecretInteger: '135'
+     - SecretInteger: '136'
+     - SecretInteger: '137'
+     - SecretInteger: '138'
+  cruiser:
+   Array:
+    inner_type: SecretInteger
+    values:
+     - SecretInteger: '145'
+     - SecretInteger: '155'
+     - SecretInteger: '165'
+  destroyer:
+   Array:
+    inner_type: SecretInteger
+    values:
+     - SecretInteger: '188'
+     - SecretInteger: '189'
+  battleship:
+   Array:
+    inner_type: SecretInteger
+    values:
+     - SecretInteger: '112'
+     - SecretInteger: '122'
+     - SecretInteger: '132'
+     - SecretInteger: '142'
+  submarine:
+   Array:
+    inner_type: SecretInteger
+    values:
+     - SecretInteger: '156'
+     - SecretInteger: '157'
+     - SecretInteger: '158'
   position:
-   SecretInteger: '23'
+   SecretInteger: '132'
  public_variables: {}
 expected_outputs:
  out:
