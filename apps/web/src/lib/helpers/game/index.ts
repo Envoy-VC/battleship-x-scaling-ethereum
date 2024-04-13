@@ -62,8 +62,6 @@ export const checkConflict = (
 ) => {
   const shipsToCheck = allShips.filter((s) => s !== ship.toLowerCase());
 
-  console.log(shipsToCheck);
-
   const conflicts: boolean[] = [];
 
   for (const s of shipsToCheck) {
@@ -79,4 +77,37 @@ export const checkConflict = (
   }
 
   return conflicts.includes(true);
+};
+
+export const rotateShip = (ship: ShipTypes, state: GameState): Position => {
+  const currentPos = state[ship.toLowerCase() as keyof GameState];
+  const x = currentPos.start[0];
+  const y = currentPos.start[1];
+  const shipLength = getShipLength(ship);
+  const evenLengthMakeup = shipLength % 2 === 0 ? 1 : 0;
+  const half = Math.floor(shipLength / 2);
+
+  if (currentPos.orientation === 'horizontal') {
+    const isInBounds = y - half >= 0 && y + half - evenLengthMakeup <= 9;
+    if (isInBounds) {
+      return {
+        start: [x, y - half],
+        end: [x, y + half - evenLengthMakeup],
+        orientation: 'vertical',
+      } as Position;
+    } else {
+      return currentPos;
+    }
+  } else {
+    const isInBounds = x - half >= 0 && x + half - evenLengthMakeup <= 9;
+    if (isInBounds) {
+      return {
+        start: [x - half, y],
+        end: [x + half - evenLengthMakeup, y],
+        orientation: 'horizontal',
+      } as Position;
+    } else {
+      return currentPos;
+    }
+  }
 };

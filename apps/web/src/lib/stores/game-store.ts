@@ -1,4 +1,4 @@
-import { checkConflict, getNewPosition } from '~/lib/helpers/game';
+import { checkConflict, getNewPosition, rotateShip } from '~/lib/helpers/game';
 
 import { create } from 'zustand';
 
@@ -37,7 +37,7 @@ export type GameState = {
 type GameActions = {
   isAtPosition: (ship: ShipTypes, position: [number, number]) => boolean;
   moveShip: (ship: ShipTypes, position: [number, number]) => void;
-  // TODO: rotateShip
+  rotateShip: (ship: ShipTypes) => void;
 };
 
 export const useGameStore = create<GameState & GameActions>((set, get) => ({
@@ -53,10 +53,13 @@ export const useGameStore = create<GameState & GameActions>((set, get) => ({
     const y = position[1];
 
     const newPos = getNewPosition(ship, x, y, currentPos);
-    console.log({ x, y, newPos });
     const hasConflict = checkConflict(ship, newPos, get());
     if (!hasConflict) set({ [ship.toLowerCase()]: newPos });
-    else alert(newPos);
+  },
+  rotateShip: (ship) => {
+    const newPos = rotateShip(ship, get());
+    const hasConflict = checkConflict(ship, newPos, get());
+    if (!hasConflict) set({ [ship.toLowerCase()]: newPos });
   },
   isAtPosition: (ship, position) => {
     const pos = get()[ship.toLowerCase() as ships];

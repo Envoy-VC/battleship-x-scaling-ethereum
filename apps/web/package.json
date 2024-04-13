@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@nillion/nillion-client-js-browser": "^0.1.1",
+    "@radix-ui/react-context-menu": "^2.1.5",
     "@t3-oss/env-nextjs": "^0.9.2",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",

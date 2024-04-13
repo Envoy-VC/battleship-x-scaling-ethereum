@@ -47,7 +47,7 @@ const BoardSquare = ({ x, y }: Props) => {
     <div
       // @ts-ignore
       ref={drop}
-      className='aspect-square w-10 rounded-sm bg-blue-300 relative flex items-center justify-center'
+      className='aspect-square w-16 rounded-md bg-blue-300 relative flex items-center justify-center'
     >
       {isAtPosition(ShipTypes.CARRIER, [x, y]) && <Carrier />}
       {isAtPosition(ShipTypes.BATTLESHIP, [x, y]) && <Battleship />}
