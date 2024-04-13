@@ -10,5 +10,15 @@ class StoreSecretParams(BaseModel):
     destroyer: List[int]
 
 
+class RetrieveSecretsParams(BaseModel):
+    store_id: str
+    secret_name: str
+    type: str
+
+
 class ComputeParams(StoreSecretParams):
     position: int
+
+
+class GetBoardParams(BaseModel):
+    store_id: str
