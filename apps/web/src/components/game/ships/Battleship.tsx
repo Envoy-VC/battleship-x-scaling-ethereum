@@ -3,10 +3,10 @@ import { useDrag } from 'react-dnd';
 
 import { ShipTypes } from '~/types/game';
 
-const Ship = () => {
+const Battleship = () => {
   const [{ isDragging }, drag, preview] = useDrag(
     () => ({
-      type: ShipTypes.CARRIER,
+      type: ShipTypes.BATTLESHIP,
       collect: (monitor) => ({
         isDragging: !!monitor.isDragging(),
       }),
@@ -17,9 +17,9 @@ const Ship = () => {
     <div
       // @ts-ignore
       ref={drag}
-      className='w-6 h-6 bg-purple-400 rounded-full'
+      className='w-6 h-6 bg-orange-400 rounded-full'
     ></div>
   );
 };
 
-export default Ship;
+export default Battleship;

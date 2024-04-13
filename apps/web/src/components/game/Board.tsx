@@ -10,8 +10,8 @@ const Board = () => {
       {grid.map((row, rowIdx) => {
         return (
           <div className='flex flex-row items-center gap-1' key={rowIdx}>
-            {row.map((ele, eleIdx) => {
-              return <BoardSquare key={eleIdx} x={rowIdx} y={eleIdx} />;
+            {row.map((_, eleIdx) => {
+              return <BoardSquare key={eleIdx} x={eleIdx} y={rowIdx} />;
             })}
           </div>
         );

@@ -3,7 +3,7 @@ import { useDrop } from 'react-dnd';
 
 import { useGameStore } from '~/lib/stores';
 
-import Ship from './Ship';
+import { Battleship, Carrier, Cruiser, Destroyer, Submarine } from './ships';
 
 import { ShipTypes } from '~/types/game';
 
@@ -33,12 +33,7 @@ const BoardSquare = ({ x, y }: Props) => {
       canDrop: () => true,
       drop: (item, monitor) => {
         const type = monitor.getItemType() as ShipTypes;
-        if (type === ShipTypes.CARRIER) {
-          moveShip(type, {
-            start: [x, x],
-            end: [y, y],
-          });
-        }
+        moveShip(type, [x, y]);
       },
       collect: (monitor) => ({
         isOver: !!monitor.isOver(),
@@ -54,10 +49,11 @@ const BoardSquare = ({ x, y }: Props) => {
       ref={drop}
       className='aspect-square w-10 rounded-sm bg-blue-300 relative flex items-center justify-center'
     >
-      {isAtPosition(ShipTypes.CARRIER, {
-        start: [x, x],
-        end: [y, y],
-      }) && <Ship />}
+      {isAtPosition(ShipTypes.CARRIER, [x, y]) && <Carrier />}
+      {isAtPosition(ShipTypes.BATTLESHIP, [x, y]) && <Battleship />}
+      {isAtPosition(ShipTypes.CRUISER, [x, y]) && <Cruiser />}
+      {isAtPosition(ShipTypes.DESTROYER, [x, y]) && <Destroyer />}
+      {isAtPosition(ShipTypes.SUBMARINE, [x, y]) && <Submarine />}
     </div>
   );
 };
