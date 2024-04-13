@@ -24,7 +24,5 @@ async def store_program():
 
     return [
         program_id,
-        program_name,
-        program_mir_path,
         client
     ]

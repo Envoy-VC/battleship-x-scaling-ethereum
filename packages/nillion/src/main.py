@@ -1,8 +1,8 @@
 import uvicorn
 from fastapi import FastAPI
-from typing import List
-from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
+
+from classes import ComputeParams
 
 
 from lib.compute import compute
@@ -24,14 +24,9 @@ def read_root():
     return {"Hello": "World"}
 
 
-class ComputeParams(BaseModel):
-    row: List[int]
-    position: int
-
-
 @app.post('/compute')
-async def compute_endpoint(params: ComputeParams):
-    result = await compute(params.row, params.position)
+async def compute_endpoint(props: ComputeParams):
+    result = await compute(props)
     return {"result": result}
 
 

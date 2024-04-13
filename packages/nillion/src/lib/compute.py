@@ -1,5 +1,6 @@
 import os
 import py_nillion_client as nillion
+from classes import ComputeParams
 
 
 from lib.store_program import store_program
@@ -8,29 +9,40 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
-async def compute(row: list, position: int):
+async def compute(props: ComputeParams):
     cluster_id = os.getenv("NILLION_CLUSTER_ID")
 
     party_name = "Party1"
 
-    [program_id, program_name, program_mir_path, client] = await store_program()
+    [program_id, client] = await store_program()
     party_id = client.party_id()
     party_id = client.party_id()
     PROGRAM_ID = program_id
 
-    row_data = []
-    for data in row:
-        row_data.append(nillion.SecretInteger(data))
+    carrier, battleship, cruiser, submarine, destroyer = [], [], [], [], []
 
-    secret1_name = "row"
-    secret1_value = nillion.SecretArray(row_data)
+    for data in props.carrier:
+        carrier.append(nillion.SecretInteger(data))
 
-    secret2_name = "position"
-    secret2_value = nillion.SecretInteger(position)
+    for data in props.battleship:
+        battleship.append(nillion.SecretInteger(data))
+
+    for data in props.cruiser:
+        cruiser.append(nillion.SecretInteger(data))
+
+    for data in props.submarine:
+        submarine.append(nillion.SecretInteger(data))
+
+    for data in props.destroyer:
+        destroyer.append(nillion.SecretInteger(data))
 
     secrets = nillion.Secrets({
-        secret1_name: secret1_value,
-        secret2_name: secret2_value
+        "carrier": nillion.SecretArray(carrier),
+        "battleship": nillion.SecretArray(battleship),
+        "cruiser": nillion.SecretArray(cruiser),
+        "submarine": nillion.SecretArray(submarine),
+        "destroyer": nillion.SecretArray(destroyer),
+        "position": nillion.SecretInteger(props.position)
     })
 
     secret_bindings = nillion.ProgramBindings(PROGRAM_ID)
@@ -44,7 +56,7 @@ async def compute(row: list, position: int):
     compute_bindings.add_input_party(party_name, party_id)
     compute_bindings.add_output_party(party_name, party_id)
 
-    compute_id = await client.compute(
+    await client.compute(
         cluster_id,
         compute_bindings,
         [store_id],
@@ -57,4 +69,4 @@ async def compute(row: list, position: int):
         if isinstance(compute_event, nillion.ComputeFinishedEvent):
             print(f"✅  Compute complete for compute_id {compute_event.uuid}")
             print(f"🖥️  The result is {compute_event.result.value}")
-            return compute_event.result.value
+            return compute_event.result.value["out"]
