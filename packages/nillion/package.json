@@ -4,7 +4,7 @@
 	"description": "",
 	"scripts": {
 		"dev": "pnpm create-venv && pnpm start-devnet && pnpm build && pnpm start-server",
-		"create-venv": "bash ./create-venv.sh",
+		"create-venv": "bash ./create-venv.sh source .venv/bin/activate && pip install -r requirements.txt",
 		"start-devnet": "bash ./start-devnet.sh",
 		"start-server": "python src/main.py",
 		"build": "cd programs && nada build",

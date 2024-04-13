@@ -1,1 +1,6 @@
 nada-dsl
+fastapi==0.110.1
+py_nillion_client==0.1.1
+pydantic==2.7.0
+python-dotenv==1.0.1
+uvicorn==0.29.0
