@@ -1,9 +1,14 @@
 {
-	"name": "nillion-python-api",
+	"name": "battleship-x-python-api",
 	"version": "1.0.0",
 	"description": "",
 	"scripts": {
-		"start-server": "python src/main.py"
+		"dev:server": "pnpm start-server",
+		"dev": "pnpm start-devnet && pnpm start-server",
+		"start-devnet": "bash ./start-devnet.sh",
+		"start-server": "python src/main.py",
+		"stop": "pkill -9 -f nillion-devnet",
+		"create-venv": "bash ./create-venv.sh source .venv/bin/activate && pip install -r requirements.txt"
 	},
 	"keywords": [],
 	"author": "",
