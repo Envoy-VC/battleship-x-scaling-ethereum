@@ -8,9 +8,9 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
-async def store_board(userKey: str, props: StoreBoardParams):
+async def store_board(props: StoreBoardParams):
     cluster_id = os.getenv("NILLION_CLUSTER_ID")
-    client = create_client(userKey)
+    client = create_client(props.user_key)
     admin = create_client("")
 
     carrier, battleship, cruiser, submarine, destroyer = [], [], [], [], []

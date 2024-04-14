@@ -8,9 +8,9 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
-async def update_secret(userKey: str, props: UpdateSecretParams):
+async def update_secret(props: UpdateSecretParams):
     cluster_id = os.getenv("NILLION_CLUSTER_ID")
-    client = create_client(userKey)
+    client = create_client(props.user_key)
     name = props.name
     value = props.value
 

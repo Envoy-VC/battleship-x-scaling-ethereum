@@ -2,7 +2,11 @@ from typing import List
 from pydantic import BaseModel
 
 
-class StoreBoardParams(BaseModel):
+class WithUserKey(BaseModel):
+    user_key: str
+
+
+class StoreBoardParams(WithUserKey):
     carrier: List[int]
     battleship: List[int]
     cruiser: List[int]
@@ -10,7 +14,7 @@ class StoreBoardParams(BaseModel):
     destroyer: List[int]
 
 
-class StoreSecretParams(BaseModel):
+class StoreSecretParams(WithUserKey):
     name: str
     value: int | List[int] | str
 
@@ -19,7 +23,7 @@ class UpdateSecretParams(StoreSecretParams):
     store_id: int
 
 
-class RetrieveSecretsParams(BaseModel):
+class RetrieveSecretsParams(WithUserKey):
     store_id: str
     secret_name: str
     type: str

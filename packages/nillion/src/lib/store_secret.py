@@ -8,9 +8,9 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
-async def store_secret(userKey: str, props: StoreSecretParams):
+async def store_secret(props: StoreSecretParams):
     cluster_id = os.getenv("NILLION_CLUSTER_ID")
-    client = create_client(userKey)
+    client = create_client(props.user_key)
     name = props.name
     value = props.value
 

@@ -24,20 +24,20 @@ def read_root():
 
 
 @app.post('/store-board')
-async def store_board_endpoint(userKey: str, props: StoreBoardParams):
-    result = await store_board.store_board(userKey, props)
+async def store_board_endpoint(props: StoreBoardParams):
+    result = await store_board.store_board(props)
     return {"store_id": result}
 
 
 @app.post('/store-secret')
-async def store_secret_endpoint(userKey: str, props: UpdateSecretParams):
-    result = await u.store_secret(userKey, props)
+async def store_secret_endpoint(props: StoreSecretParams):
+    result = await store_secret.store_secret(props)
     return {"store_id": result}
 
 
 @app.post('/update-secret')
-async def update_secret_endpoint(userKey: str, props: StoreSecretParams):
-    result = await update_secret.update_secret(userKey, props)
+async def update_secret_endpoint(props: UpdateSecretParams):
+    result = await update_secret.update_secret(props)
     return {"store_id": result}
 
 
@@ -48,15 +48,15 @@ async def compute_endpoint(props: ComputeParams):
 
 
 @app.post('/retrieve-secrets')
-async def retrieve_secret(userKey: str, props: RetrieveSecretsParams):
-    result = await retrieve_secrets.retrieve_secrets(userKey, props)
+async def retrieve_secret(props: RetrieveSecretsParams):
+    result = await retrieve_secrets.retrieve_secrets(props)
     return {"result": result}
 
 
 @app.post('/get-board')
-async def get_board_endpoint(userKey: str, props: GetBoardParams):
-    result = await get_board.get_board(userKey, props)
-    return {"result": result}
+async def get_board_endpoint(props: GetBoardParams):
+    result = await get_board.get_board(props)
+    return result
 
 
 if __name__ == "__main__":
