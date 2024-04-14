@@ -7,7 +7,7 @@ load_dotenv()
 
 async def store_program():
     cluster_id = os.getenv("NILLION_CLUSTER_ID")
-    client = create_client()
+    client = create_client("")
 
     program_name = "main"
     program_mir_path = f"./programs/target/{program_name}.nada.bin"

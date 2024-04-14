@@ -7,9 +7,9 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
-async def retrieve_secrets(props: RetrieveSecretsParams):
+async def retrieve_secrets(userKey: str, props: RetrieveSecretsParams):
     cluster_id = os.getenv("NILLION_CLUSTER_ID")
-    client = create_client()
+    client = create_client(userKey)
 
     result = await client.retrieve_secret(cluster_id, props.store_id, props.secret_name)
     secret_results = result[1].value

@@ -2,11 +2,10 @@ import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from classes import ComputeParams, StoreSecretParams, RetrieveSecretsParams, GetBoardParams
+from classes import ComputeParams, StoreBoardParams, RetrieveSecretsParams, GetBoardParams, StoreSecretParams
 
 
-from lib import compute, store_secrets, retrieve_secrets, get_board
-
+from lib import compute, retrieve_secrets, get_board, store_board, store_secret
 
 app = FastAPI()
 
@@ -24,27 +23,33 @@ def read_root():
     return {"Hello": "World"}
 
 
+@app.post('/store-board')
+async def store_board_endpoint(userKey: str, props: StoreBoardParams):
+    result = await store_board.store_board(userKey, props)
+    return {"store_id": result}
+
+
+@app.post('/store-secret')
+async def store_secret_endpoint(userKey: str, props: StoreSecretParams):
+    result = await store_secret.store_secret(userKey, props)
+    return {"store_id": result}
+
+
 @app.post('/compute')
 async def compute_endpoint(props: ComputeParams):
     result = await compute.compute(props)
     return {"result": result}
 
 
-@app.post('/store-secrets')
-async def store_endpoint(props: StoreSecretParams):
-    result = await store_secrets.store_secrets(props)
-    return {"store_id": result}
-
-
 @app.post('/retrieve-secrets')
-async def retrieve_endpoint(props: RetrieveSecretsParams):
-    result = await retrieve_secrets.retrieve_secrets(props)
+async def retrieve_secret(userKey: str, props: RetrieveSecretsParams):
+    result = await retrieve_secrets.retrieve_secrets(userKey, props)
     return {"result": result}
 
 
 @app.post('/get-board')
-async def get_board_endpoint(props: GetBoardParams):
-    result = await get_board.get_board(props)
+async def get_board_endpoint(userKey: str, props: GetBoardParams):
+    result = await get_board.get_board(userKey, props)
     return {"result": result}
 
 

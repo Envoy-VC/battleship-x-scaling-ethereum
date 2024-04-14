@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
-async def compute(props: ComputeParams):
+async def compute(userKey: str, props: ComputeParams):
     cluster_id = os.getenv("NILLION_CLUSTER_ID")
 
     party_name = "Party1"

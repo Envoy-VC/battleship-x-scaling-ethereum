@@ -18,6 +18,10 @@ def getUserKeyFromFile(userkey_filepath):
     return nillion.UserKey.from_file(userkey_filepath)
 
 
+def getUserKeyFromString(key: str):
+    return nillion.UserKey.from_base58(key)
+
+
 def getNodeKeyFromFile(nodekey_filepath):
     return nillion.NodeKey.from_file(nodekey_filepath)
 

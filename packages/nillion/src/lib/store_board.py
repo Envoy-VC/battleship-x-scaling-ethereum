@@ -1,6 +1,6 @@
 import os
 import py_nillion_client as nillion
-from classes import StoreSecretParams
+from classes import StoreBoardParams
 
 from helpers.client import create_client
 
@@ -8,9 +8,9 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
-async def store_secrets(props: StoreSecretParams):
+async def store_board(userKey: str, props: StoreBoardParams):
     cluster_id = os.getenv("NILLION_CLUSTER_ID")
-    client = create_client()
+    client = create_client(userKey)
 
     carrier, battleship, cruiser, submarine, destroyer = [], [], [], [], []
 

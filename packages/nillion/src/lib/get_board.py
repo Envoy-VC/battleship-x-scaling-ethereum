@@ -7,9 +7,9 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
-async def get_board(props: GetBoardParams):
+async def get_board(userKey: str, props: GetBoardParams):
     cluster_id = os.getenv("NILLION_CLUSTER_ID")
-    client = create_client()
+    client = create_client(userKey)
 
     secret_names = ["carrier", "battleship",
                     "cruiser", "submarine", "destroyer"]

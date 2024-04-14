@@ -2,12 +2,17 @@ from typing import List
 from pydantic import BaseModel
 
 
-class StoreSecretParams(BaseModel):
+class StoreBoardParams(BaseModel):
     carrier: List[int]
     battleship: List[int]
     cruiser: List[int]
     submarine: List[int]
     destroyer: List[int]
+
+
+class StoreSecretParams(BaseModel):
+    name: str
+    value: int | List[int] | str
 
 
 class RetrieveSecretsParams(BaseModel):
