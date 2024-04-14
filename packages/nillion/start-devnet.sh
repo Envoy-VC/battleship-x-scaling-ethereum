@@ -15,7 +15,9 @@ done
 OUTFILE=$(mktemp);
 PIDFILE=$(mktemp);
 
-"$NILLION_DEVNET" --seed vedada >"$OUTFILE" & echo $! >"$PIDFILE";
+random_number=$(od -An -N2 -i /dev/urandom)
+
+"$NILLION_DEVNET" --seed $random_number >"$OUTFILE" & echo $! >"$PIDFILE";
 ENV_TO_UPDATE=".env"
 echo "--------------------"
 echo "Updating your ${ENV_TO_UPDATE} files with nillion-devnet environment info... This may take a minute."
