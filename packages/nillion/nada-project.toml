@@ -1,0 +1,13 @@
+name = "battleship-x-programs"
+version = "0.1.0"
+authors = ["Vedant Chainani"]
+
+[[programs]]
+path = "src/with-array.py"
+name = "with-array"
+prime_size = 128
+
+[[programs]]
+path = "src/without-array.py"
+name = "without-array"
+prime_size = 128

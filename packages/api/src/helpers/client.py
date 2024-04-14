@@ -7,7 +7,7 @@ def create_client(userKey: str):
     bootnodes = [os.getenv("NILLION_BOOTNODE_MULTIADDRESS")]
     payments_config = get_payments_config()
 
-    key
+    key = ""
     if userKey == "":
         key = getUserKeyFromFile(node_config["userkey_file"])
     else:
@@ -16,7 +16,7 @@ def create_client(userKey: str):
     return nillion.NillionClient(
         getNodeKeyFromFile(node_config["nodekey_file"]),
         bootnodes,
-        nillion.ConnectionMode.relay(),
+        nillion.ConnectionMode.dialer(),
         key,
         payments_config,
     )

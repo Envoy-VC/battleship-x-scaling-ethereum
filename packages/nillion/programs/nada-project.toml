@@ -1,8 +1,0 @@
-name = "battleship-x-programs"
-version = "0.1.0"
-authors = ["Vedant Chainani"]
-
-[[programs]]
-path = "src/main.py"
-name = "main"
-prime_size = 128

@@ -9,9 +9,10 @@ from lib import compute, retrieve_secrets, get_board, store_board, store_secret,
 
 app = FastAPI()
 
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=['*'],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -23,8 +24,15 @@ def read_root():
     return {"Hello": "World"}
 
 
+@app.post('/test')
+async def store_board_endpoint(props: StoreBoardParams):
+    return {"store_id": props}
+
+
 @app.post('/store-board')
 async def store_board_endpoint(props: StoreBoardParams):
+    client = create_client(props.user_key)
+
     result = await store_board.store_board(props)
     return {"store_id": result}
 
@@ -60,4 +68,6 @@ async def get_board_endpoint(props: GetBoardParams):
 
 
 if __name__ == "__main__":
-    uvicorn.run(app)
+    config = uvicorn.Config(app, port=8000, log_level="info", loop="asyncio")
+    server = uvicorn.Server(config)
+    server.run()
