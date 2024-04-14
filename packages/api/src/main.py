@@ -66,7 +66,6 @@ async def get_board_endpoint(props: GetBoardParams):
 
 
 if __name__ == "__main__":
-
-    config = uvicorn.Config(app, port=8000)
+    config = uvicorn.Config(app, port=8000, reload=True)
     server = uvicorn.Server(config)
     server.run()

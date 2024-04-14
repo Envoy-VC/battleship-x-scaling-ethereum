@@ -16,13 +16,13 @@ export type StoreSecretParams = {
 } & WithUserKey;
 
 export type UpdateSecretParams = {
-  store_id: number;
+  store_id: string;
 } & StoreSecretParams;
 
 export type RetrieveSecretsParams = {
   store_id: string;
   secret_name: string;
-  type: string;
+  type: 'SecretArray' | 'SecretInteger' | 'SecretBlob';
 } & WithUserKey;
 
 export type ComputeParams = {

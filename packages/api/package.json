@@ -4,6 +4,7 @@
 	"description": "",
 	"scripts": {
 		"dev:server": "pnpm start-server",
+		"dev:devnet": "pnpm start-devnet",
 		"dev": "pnpm start-devnet && pnpm start-server",
 		"start-devnet": "bash ./start-devnet.sh",
 		"start-server": "python src/main.py",

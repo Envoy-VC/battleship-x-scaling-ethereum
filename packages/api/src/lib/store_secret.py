@@ -26,9 +26,10 @@ async def store_secret(props: StoreSecretParams):
         return
 
     secrets = nillion.Secrets(data)
+    permissions = nillion.Permissions.default_for_user(client.user_id())
 
     store_id = await client.store_secrets(
-        cluster_id, None, secrets, None
+        cluster_id, None, secrets, permissions
     )
 
     print(f"The secret is stored at store_id: {store_id}")

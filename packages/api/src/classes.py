@@ -20,7 +20,7 @@ class StoreSecretParams(WithUserKey):
 
 
 class UpdateSecretParams(StoreSecretParams):
-    store_id: int
+    store_id: str
 
 
 class RetrieveSecretsParams(WithUserKey):
