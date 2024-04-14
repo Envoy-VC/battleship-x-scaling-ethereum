@@ -1,0 +1,11 @@
+{
+	"name": "nillion-python-api",
+	"version": "1.0.0",
+	"description": "",
+	"scripts": {
+		"start-server": "python src/main.py"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC"
+}

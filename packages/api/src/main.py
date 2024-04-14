@@ -31,8 +31,6 @@ async def store_board_endpoint(props: StoreBoardParams):
 
 @app.post('/store-board')
 async def store_board_endpoint(props: StoreBoardParams):
-    client = create_client(props.user_key)
-
     result = await store_board.store_board(props)
     return {"store_id": result}
 
@@ -68,6 +66,7 @@ async def get_board_endpoint(props: GetBoardParams):
 
 
 if __name__ == "__main__":
-    config = uvicorn.Config(app, port=8000, log_level="info", loop="asyncio")
+
+    config = uvicorn.Config(app, port=8000)
     server = uvicorn.Server(config)
     server.run()
