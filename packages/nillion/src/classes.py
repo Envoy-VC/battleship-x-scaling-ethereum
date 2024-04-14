@@ -15,6 +15,10 @@ class StoreSecretParams(BaseModel):
     value: int | List[int] | str
 
 
+class UpdateSecretParams(StoreSecretParams):
+    store_id: int
+
+
 class RetrieveSecretsParams(BaseModel):
     store_id: str
     secret_name: str

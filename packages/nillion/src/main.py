@@ -2,10 +2,10 @@ import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from classes import ComputeParams, StoreBoardParams, RetrieveSecretsParams, GetBoardParams, StoreSecretParams
+from classes import ComputeParams, StoreBoardParams, RetrieveSecretsParams, GetBoardParams, StoreSecretParams, UpdateSecretParams
 
 
-from lib import compute, retrieve_secrets, get_board, store_board, store_secret
+from lib import compute, retrieve_secrets, get_board, store_board, store_secret, update_secret
 
 app = FastAPI()
 
@@ -30,8 +30,14 @@ async def store_board_endpoint(userKey: str, props: StoreBoardParams):
 
 
 @app.post('/store-secret')
-async def store_secret_endpoint(userKey: str, props: StoreSecretParams):
-    result = await store_secret.store_secret(userKey, props)
+async def store_secret_endpoint(userKey: str, props: UpdateSecretParams):
+    result = await u.store_secret(userKey, props)
+    return {"store_id": result}
+
+
+@app.post('/update-secret')
+async def update_secret_endpoint(userKey: str, props: StoreSecretParams):
+    result = await update_secret.update_secret(userKey, props)
     return {"store_id": result}
 
 
