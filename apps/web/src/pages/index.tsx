@@ -36,22 +36,22 @@ const Home = () => {
             console.log('Board Stored: ', store_board_response);
             const res2 = await storeSecret({
               name: 'moves',
-              value: [100],
+              value: 'test',
               user_key: '',
             });
-            console.log('Moves Stored: ', res2.store_id, ' Value', [100]);
+            console.log('Moves Stored: ', res2.store_id, ' Value test');
             console.log('Playing Move 134');
             const res3 = await updateSecret({
               store_id: res2.store_id,
               name: 'moves',
-              value: [100, 134],
+              value: 'test1',
               user_key: '',
             });
             const res4 = await retrieveSecrets({
               store_id: res2.store_id,
               user_key: '',
               secret_name: 'moves',
-              type: 'SecretArray',
+              type: 'SecretBlob',
             });
             console.log('Moves Retrieved: ', res4.result);
           } catch (error) {
