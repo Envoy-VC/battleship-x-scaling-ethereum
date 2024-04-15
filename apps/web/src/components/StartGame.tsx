@@ -1,6 +1,7 @@
 import React from 'react';
 
 import { BATTLESHIP_GAME_ABI } from '~/lib/abi';
+import constants from '~/lib/constants.json';
 
 import { toast } from 'sonner';
 import { useAccount, useWriteContract } from 'wagmi';
@@ -30,6 +31,7 @@ const StartGame = () => {
   React.useEffect(() => {
     if (isSuccess) {
       toast('Game created successfully');
+      setIsOpen(false);
     }
     if (isError) {
       toast('Error creating game');
@@ -48,7 +50,7 @@ const StartGame = () => {
 
     const h = await writeContractAsync({
       abi: BATTLESHIP_GAME_ABI,
-      address: '0x26Df0Ea798971A97Ae121514B32999DfDb220e1f',
+      address: constants.BATTLESHIP_GAME_ADDRESS as `0x${string}`,
       functionName: 'createGame',
       args: [address, opponentAddr],
     });

@@ -6,14 +6,6 @@ import { toast } from 'sonner';
 import { Connector, useAccount, useConnect } from 'wagmi';
 
 import { Button } from '~/components/ui/button';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '~/components/ui/dialog';
 
 const ConnectButton = () => {
   const { isConnected } = useAccount();
@@ -28,6 +20,12 @@ const ConnectButton = () => {
       toast((error as Error).message);
     }
   };
+
+  React.useEffect(() => {
+    if (isConnected) {
+      onConnectWithNillion();
+    }
+  }, [isConnected]);
 
   const onConnectWithNillion = async () => {
     try {

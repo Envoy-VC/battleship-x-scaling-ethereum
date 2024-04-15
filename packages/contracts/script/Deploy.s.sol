@@ -15,6 +15,10 @@ contract DeployScript is Script {
         BattleshipGame game = new BattleshipGame(deployerAddress);
         console2.log("BattleshipGame deployed at", address(game));
 
+        string memory path = "../../apps/web/src/lib/constants.json";
+        vm.assertTrue(vm.exists(path));
+        vm.writeJson(vm.toString(address(game)), path, ".BATTLESHIP_GAME_ADDRESS");
+
         vm.stopBroadcast();
     }
 }
