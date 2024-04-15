@@ -1,5 +1,7 @@
 import React from 'react';
 
+import { useNillion } from '~/lib/hooks';
+
 import { toast } from 'sonner';
 import { Connector, useAccount, useConnect } from 'wagmi';
 
@@ -16,6 +18,7 @@ import {
 const ConnectButton = () => {
   const { isConnected } = useAccount();
   const { connectors, connect } = useConnect();
+  const { nillion, getUserKey, setNillion } = useNillion();
 
   const onConnect = async () => {
     try {
@@ -26,26 +29,30 @@ const ConnectButton = () => {
     }
   };
 
-  if (!isConnected) {
-    return <Button onClick={onConnect}>Connect</Button>;
-  } else {
-    return (
-      <Dialog>
-        <DialogTrigger asChild>
-          <Button>Connected</Button>
-        </DialogTrigger>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Are you absolutely sure?</DialogTitle>
-            <DialogDescription>
-              This action cannot be undone. This will permanently delete your
-              account and remove your data from our servers.
-            </DialogDescription>
-          </DialogHeader>
-        </DialogContent>
-      </Dialog>
-    );
-  }
+  const onConnectWithNillion = async () => {
+    try {
+      const response = await getUserKey();
+
+      if (response.connectedToSnap === false) {
+        toast('Error connecting to Nillion');
+        return;
+      }
+
+      setNillion(response);
+    } catch (error) {
+      toast((error as Error).message);
+    }
+  };
+
+  return (
+    <div>
+      {!isConnected && <Button onClick={onConnect}>Connect</Button>}
+      {isConnected && !nillion.connectedToSnap && (
+        <Button onClick={onConnectWithNillion}>Connect to Nillion</Button>
+      )}
+      {isConnected && nillion.connectedToSnap && <Button>Connected</Button>}
+    </div>
+  );
 };
 
 export default ConnectButton;
