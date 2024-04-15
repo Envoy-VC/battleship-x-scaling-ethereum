@@ -1,11 +1,15 @@
-import { createConfig, http } from 'wagmi';
-import { arbitrumSepolia } from 'wagmi/chains';
+import { cookieStorage, createConfig, createStorage, http } from 'wagmi';
+import { arbitrumSepolia, foundry } from 'wagmi/chains';
 import { injected } from 'wagmi/connectors';
 
 export const config = createConfig({
-  chains: [arbitrumSepolia],
+  chains: [foundry],
+  ssr: true,
+  storage: createStorage({
+    storage: cookieStorage,
+  }),
   connectors: [injected()],
   transports: {
-    [arbitrumSepolia.id]: http(),
+    [foundry.id]: http(),
   },
 });
