@@ -9,13 +9,14 @@ enum PlayerType {
 struct Player {
     address playerAddress;
     string storeId;
+    uint8[] moves;
 }
 
 struct Game {
     Player player1;
     Player player2;
-    uint8[] moves;
     PlayerType next_turn;
+    bool hasStarted;
     bool hasEnded;
     address winner;
 }
@@ -25,6 +26,7 @@ error NotAPlayer();
 error InvalidTurn();
 error GameEnded();
 error DuplicateMove();
+error GameAlreadyStarted();
 
 interface IBattleshipGame {
     function createGame(address _player1, address _player2) external;

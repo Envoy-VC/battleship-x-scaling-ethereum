@@ -8,14 +8,16 @@ contract BattleshipGame is Ownable, IBattleshipGame {
     uint256 public gameId;
     mapping(uint256 => Game) public games;
 
+    event GameStarted(uint256 gameId);
+
     constructor(address _initialOwner) Ownable(_initialOwner) {}
 
     function createGame(address _player1, address _player2) external {
         games[gameId] = Game({
-            player1: Player(_player1, ""),
-            player2: Player(_player2, ""),
-            moves: new uint8[](100),
+            player1: Player(_player1, "", new uint8[](100)),
+            player2: Player(_player2, "", new uint8[](100)),
             next_turn: PlayerType.Player1,
+            hasStarted: false,
             hasEnded: false,
             winner: address(0)
         });
@@ -25,6 +27,17 @@ contract BattleshipGame is Ownable, IBattleshipGame {
 
     function getGame(uint256 _gameId) external view returns (Game memory) {
         return games[_gameId];
+    }
+
+    function startGame(uint256 _gameId) internal {
+        Game storage game = games[_gameId];
+        if (
+            keccak256(abi.encodePacked(game.player1.storeId)) != keccak256(abi.encodePacked(""))
+                && keccak256(abi.encodePacked(game.player2.storeId)) != keccak256(abi.encodePacked(""))
+        ) {
+            game.hasStarted = true;
+            emit GameStarted(_gameId);
+        }
     }
 
     function onlyPlayer(Game memory game, PlayerType player) internal view {
@@ -43,6 +56,9 @@ contract BattleshipGame is Ownable, IBattleshipGame {
 
     function setStoreId(PlayerType player, uint256 _gameId, string memory _storeId) external {
         Game storage game = games[_gameId];
+        if (game.hasStarted) {
+            revert GameAlreadyStarted();
+        }
         if (player == PlayerType.Player1) {
             onlyPlayer(game, player);
             game.player1.storeId = _storeId;
@@ -52,6 +68,7 @@ contract BattleshipGame is Ownable, IBattleshipGame {
         } else {
             revert InvalidPlayer();
         }
+        startGame(_gameId);
     }
 
     function checkDuplicate(uint8[] memory moves, uint8 move) internal pure {
@@ -80,12 +97,13 @@ contract BattleshipGame is Ownable, IBattleshipGame {
             revert InvalidPlayer();
         }
 
-        checkDuplicate(game.moves, move);
-        game.moves.push(move);
-
         if (player == PlayerType.Player1) {
+            checkDuplicate(game.player1.moves, move);
+            game.player1.moves.push(move);
             game.next_turn = PlayerType.Player2;
         } else {
+            checkDuplicate(game.player2.moves, move);
+            game.player2.moves.push(move);
             game.next_turn = PlayerType.Player1;
         }
     }
