@@ -19,6 +19,23 @@ const getShipLength = (ship: ShipTypes): number => {
   }
 };
 
+export const getShipColor = (ship: ShipTypes): string => {
+  switch (ship) {
+    case ShipTypes.CARRIER:
+      return '#c084fc';
+    case ShipTypes.BATTLESHIP:
+      return '#ff8138';
+    case ShipTypes.CRUISER:
+      return '#4ade80';
+    case ShipTypes.SUBMARINE:
+      return '#1d4fd8';
+    case ShipTypes.DESTROYER:
+      return '#000';
+    default:
+      return '';
+  }
+};
+
 export const getNewPosition = (
   ship: ShipTypes,
   x: number,

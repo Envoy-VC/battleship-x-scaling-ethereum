@@ -2,8 +2,9 @@ import React from 'react';
 import { useDrop } from 'react-dnd';
 
 import { useGameStore } from '~/lib/stores';
+import { allShips } from '~/lib/stores/game-store';
 
-import { Battleship, Carrier, Cruiser, Destroyer, Submarine } from './ships';
+import Ship from './Ship';
 
 import { ShipTypes } from '~/types/game';
 
@@ -49,11 +50,12 @@ const BoardSquare = ({ x, y }: Props) => {
       ref={drop}
       className='aspect-square w-16 rounded-md bg-blue-300 relative flex items-center justify-center'
     >
-      {isAtPosition(ShipTypes.CARRIER, [x, y]) && <Carrier />}
-      {isAtPosition(ShipTypes.BATTLESHIP, [x, y]) && <Battleship />}
-      {isAtPosition(ShipTypes.CRUISER, [x, y]) && <Cruiser />}
-      {isAtPosition(ShipTypes.DESTROYER, [x, y]) && <Destroyer />}
-      {isAtPosition(ShipTypes.SUBMARINE, [x, y]) && <Submarine />}
+      {allShips.map((ship) => {
+        const type = ship.toUpperCase() as ShipTypes;
+        if (isAtPosition(type, [x, y])) {
+          return <Ship type={type} />;
+        }
+      })}
     </div>
   );
 };
