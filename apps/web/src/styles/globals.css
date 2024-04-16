@@ -2,6 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+  font-family: 'Battleship';
+  src: url('../../public/fonts/airstrike.ttf');
+}
+
 @layer base {
   :root {
     --background: hsl(0 0% 100%);

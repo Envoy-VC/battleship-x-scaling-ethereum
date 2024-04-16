@@ -9,7 +9,9 @@ const Navbar = () => {
 
   return (
     <div className='px-4 py-2 w-full flex flex-row items-center justify-between'>
-      <div>Battleship-X</div>
+      <div className='font-battleship font-bold text-4xl text-white tracking-wide'>
+        Battleship-X
+      </div>
       <ConnectButton />
     </div>
   );

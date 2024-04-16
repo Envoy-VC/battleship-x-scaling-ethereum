@@ -44,11 +44,19 @@ const ConnectButton = () => {
 
   return (
     <div>
-      {!isConnected && <Button onClick={onConnect}>Connect</Button>}
-      {isConnected && !nillion.connectedToSnap && (
-        <Button onClick={onConnectWithNillion}>Connect to Nillion</Button>
+      {!isConnected && (
+        <Button onClick={onConnect} variant='secondary'>
+          Connect
+        </Button>
       )}
-      {isConnected && nillion.connectedToSnap && <Button>Connected</Button>}
+      {isConnected && !nillion.connectedToSnap && (
+        <Button onClick={onConnectWithNillion} variant='secondary'>
+          Connect to Nillion
+        </Button>
+      )}
+      {isConnected && nillion.connectedToSnap && (
+        <Button variant='secondary'>Connected</Button>
+      )}
     </div>
   );
 };
