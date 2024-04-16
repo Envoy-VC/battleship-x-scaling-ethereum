@@ -51,7 +51,8 @@ const BoardSquare = ({ x, y, isHit }: Props) => {
     <div
       // @ts-ignore
       ref={drop}
-      className='aspect-square w-16 rounded-md bg-blue-300 relative flex items-center justify-center'
+      className='aspect-square w-16 rounded-md bg-[#2f90f1] relative flex items-center justify-center'
+ 
     >
       {isHit && <X className='z-[1] absolute text-red-400' strokeWidth={3} />}
       {allShips.map((ship) => {
