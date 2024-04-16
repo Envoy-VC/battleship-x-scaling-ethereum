@@ -38,6 +38,9 @@ importers:
       '@tanstack/react-query':
         specifier: ^5.29.2
         version: 5.29.2(react@18.2.0)
+      abitype:
+        specifier: ^1.0.2
+        version: 1.0.2(typescript@5.4.4)(zod@3.22.4)
       axios:
         specifier: ^1.6.8
         version: 1.6.8
@@ -137,6 +140,8 @@ importers:
         version: 5.4.4
 
   packages/api: {}
+
+  packages/contracts: {}
 
   packages/nillion: {}
 
@@ -4504,6 +4509,21 @@ packages:
 
   /abitype@1.0.0(typescript@5.4.4)(zod@3.22.4):
     resolution: {integrity: sha512-NMeMah//6bJ56H5XRj8QCV4AwuW6hB6zqz2LnhhLdcWVQOsXki6/Pn3APeqxCma62nXIcmZWdu1DlHWS74umVQ==}
+    peerDependencies:
+      typescript: '>=5.0.4'
+      zod: ^3 >=3.22.0
+    peerDependenciesMeta:
+      typescript:
+        optional: true
+      zod:
+        optional: true
+    dependencies:
+      typescript: 5.4.4
+      zod: 3.22.4
+    dev: false
+
+  /abitype@1.0.2(typescript@5.4.4)(zod@3.22.4):
+    resolution: {integrity: sha512-aFt4k2H+eiAKy/zxtnORa9iIb10BMBeWL18l8v4+QuwYEBXPxxjSB1bFZCzQmKPoj8m7j68K705l3uY+E2gAjg==}
     peerDependencies:
       typescript: '>=5.0.4'
       zod: ^3 >=3.22.0

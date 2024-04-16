@@ -3,13 +3,25 @@ import React from 'react';
 import { BATTLESHIP_GAME_ABI } from '~/lib/abi';
 import { BATTLESHIP_GAME_ADDRESS } from '~/lib/constants.json';
 
+import { AbiParameterToPrimitiveType } from 'abitype';
 import { useAccount, useReadContracts } from 'wagmi';
+
+export type GameType = AbiParameterToPrimitiveType<
+  (typeof BATTLESHIP_GAME_ABI)['5']['outputs']['0']
+>;
+
+// other props any number of props
+export interface GameScreenProps {
+  game: GameType | undefined;
+}
+
+type GameScreen = (props: GameScreenProps) => React.JSX.Element;
 
 interface Props extends React.PropsWithChildren {
   gameId: number;
-  notStarted: React.ReactNode;
-  started: React.ReactNode;
-  ended: React.ReactNode;
+  notStarted: GameScreen;
+  started: GameScreen;
+  ended: GameScreen;
 }
 
 const GameWrapper = ({ gameId, started, notStarted, ended }: Props) => {
