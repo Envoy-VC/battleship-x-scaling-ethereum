@@ -19,12 +19,12 @@ type GameScreen = (props: GameScreenProps) => React.JSX.Element;
 
 interface Props extends React.PropsWithChildren {
   gameId: number;
-  notStarted: GameScreen;
-  started: GameScreen;
-  ended: GameScreen;
+  NotStarted: GameScreen;
+  Started: GameScreen;
+  Ended: GameScreen;
 }
 
-const GameWrapper = ({ gameId, started, notStarted, ended }: Props) => {
+const GameWrapper = ({ gameId, Started, NotStarted, Ended }: Props) => {
   const { address } = useAccount();
   const contract = {
     abi: BATTLESHIP_GAME_ABI,
@@ -52,11 +52,11 @@ const GameWrapper = ({ gameId, started, notStarted, ended }: Props) => {
   }
 
   if (hasStarted) {
-    return <>{started}</>;
+    return <>{Started({ game })}</>;
   } else if (!hasStarted) {
-    return <>{notStarted}</>;
+    return <>{NotStarted({ game })}</>;
   } else if (hasEnded) {
-    return <>{ended}</>;
+    return <>{Ended({ game })}</>;
   }
 };
 

@@ -12,9 +12,9 @@ const Game = () => {
     return (
       <GameWrapper
         gameId={parseInt(id.at(0) ?? '0')}
-        started={(props) => <GameStarted {...props} />}
-        notStarted={(props) => <GameNotStarted {...props} />}
-        ended={(props) => <GameEnded {...props} />}
+        Started={(props) => <GameStarted {...props} />}
+        NotStarted={(props) => <GameNotStarted {...props} />}
+        Ended={(props) => <GameEnded {...props} />}
       />
     );
 };

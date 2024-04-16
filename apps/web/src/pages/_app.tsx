@@ -10,6 +10,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { WagmiProvider } from 'wagmi';
 import '~/styles/globals.css';
 
+import { Layout } from '~/components/screens';
 import { Toaster } from '~/components/ui/sonner';
 
 const queryClient = new QueryClient();
@@ -25,8 +26,10 @@ const MyApp: AppType = ({ Component, pageProps }) => {
       <WagmiProvider config={config}>
         <QueryClientProvider client={queryClient}>
           <DndProvider backend={HTML5Backend}>
-            <Component {...pageProps} />
-            <Toaster />
+            <Layout>
+              <Component {...pageProps} />
+              <Toaster />
+            </Layout>
           </DndProvider>
         </QueryClientProvider>
       </WagmiProvider>

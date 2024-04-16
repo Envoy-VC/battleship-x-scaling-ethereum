@@ -2,6 +2,7 @@ import { checkConflict, getNewPosition, rotateShip } from '~/lib/helpers/game';
 
 import { create } from 'zustand';
 
+import { GetBoardResponse } from '~/types/api';
 import { ShipTypes } from '~/types/game';
 
 export type Position = {
@@ -43,6 +44,7 @@ type GameActions = {
     ship: ShipTypes,
     position: [number, number]
   ) => 'start' | 'end' | null;
+  setBoard: (res: GetBoardResponse) => void;
 };
 
 export const useGameStore = create<GameState & GameActions>((set, get) => ({
@@ -85,4 +87,21 @@ export const useGameStore = create<GameState & GameActions>((set, get) => ({
     return null;
   },
   getShip: (ship) => get()[ship.toLowerCase() as ships],
+  setBoard: (res) => {
+    const ships = Object.keys(res) as ships[];
+    ships.forEach((ship) => {
+      const coordinates = res[ship];
+      const startX = Math.round((coordinates[0]! - 100) / 10);
+      const startY = (coordinates[0]! - 100) % 10;
+      const endX = Math.round((coordinates[-1]! - 100) / 10);
+      const endY = (coordinates[-1]! - 100) % 10;
+      const orientation = startX === endX ? 'horizontal' : 'vertical';
+      const pos: Position = {
+        start: [startX, startY],
+        end: [endX, endY],
+        orientation,
+      };
+      set({ [ship.toLowerCase()]: pos });
+    });
+  },
 }));
