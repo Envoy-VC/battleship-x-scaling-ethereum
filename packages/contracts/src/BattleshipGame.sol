@@ -54,6 +54,11 @@ contract BattleshipGame is Ownable, IBattleshipGame {
         }
     }
 
+    function isPlayer(uint256 _gameId, address _player) external view returns (bool) {
+        Game memory game = games[_gameId];
+        return game.player1.playerAddress == _player || game.player2.playerAddress == _player;
+    }
+
     function setStoreId(PlayerType player, uint256 _gameId, string memory _storeId) external {
         Game storage game = games[_gameId];
         if (game.hasStarted) {

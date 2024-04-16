@@ -3,12 +3,13 @@ import React from 'react';
 import { useGameStore } from '~/lib/stores';
 import { allShips } from '~/lib/stores/game-store';
 
+import StartGame from '~/components/StartGame';
 import { Ship } from '~/components/game';
 import { Board } from '~/components/game';
 
 import { ShipTypes } from '~/types/game';
 
-const Game = () => {
+const Games = () => {
   const { isAtPosition } = useGameStore();
   return (
     <div className='p-12'>
@@ -23,9 +24,10 @@ const Game = () => {
             </div>
           );
         })}
+        <StartGame />
       </div>
     </div>
   );
 };
 
-export default Game;
+export default Games;

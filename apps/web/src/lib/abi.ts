@@ -118,6 +118,16 @@ export const BATTLESHIP_GAME_ABI = [
   },
   {
     type: 'function',
+    name: 'isPlayer',
+    inputs: [
+      { name: '_gameId', type: 'uint256', internalType: 'uint256' },
+      { name: '_player', type: 'address', internalType: 'address' },
+    ],
+    outputs: [{ name: '', type: 'bool', internalType: 'bool' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
     name: 'owner',
     inputs: [],
     outputs: [{ name: '', type: 'address', internalType: 'address' }],
