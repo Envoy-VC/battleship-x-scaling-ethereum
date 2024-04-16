@@ -53,7 +53,7 @@ const BoardSquare = ({ x, y }: Props) => {
       {allShips.map((ship) => {
         const type = ship.toUpperCase() as ShipTypes;
         if (isAtPosition(type, [x, y])) {
-          return <Ship type={type} />;
+          return <Ship type={type} x={x} y={y} />;
         }
       })}
     </div>

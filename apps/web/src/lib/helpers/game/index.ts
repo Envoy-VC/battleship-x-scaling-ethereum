@@ -2,7 +2,7 @@ import { GameState, Position, allShips } from '~/lib/stores/game-store';
 
 import { ShipTypes } from '~/types/game';
 
-const getShipLength = (ship: ShipTypes): number => {
+export const getShipLength = (ship: ShipTypes): number => {
   switch (ship) {
     case ShipTypes.CARRIER:
       return 5;

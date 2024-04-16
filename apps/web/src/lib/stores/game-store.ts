@@ -38,6 +38,11 @@ type GameActions = {
   isAtPosition: (ship: ShipTypes, position: [number, number]) => boolean;
   moveShip: (ship: ShipTypes, position: [number, number]) => void;
   rotateShip: (ship: ShipTypes) => void;
+  getShip: (ship: ShipTypes) => Position;
+  isExtreme: (
+    ship: ShipTypes,
+    position: [number, number]
+  ) => 'start' | 'end' | null;
 };
 
 export const useGameStore = create<GameState & GameActions>((set, get) => ({
@@ -69,4 +74,15 @@ export const useGameStore = create<GameState & GameActions>((set, get) => ({
     if (inX && inY) return true;
     else return false;
   },
+  isExtreme: (ship, position) => {
+    const [x, y] = position;
+    const pos = get()[ship.toLowerCase() as ships];
+    const isStart = x === pos.start[0] && y === pos.start[1];
+    const isEnd = x === pos.end[0] && y === pos.end[1];
+
+    if (isStart) return 'start';
+    if (isEnd) return 'end';
+    return null;
+  },
+  getShip: (ship) => get()[ship.toLowerCase() as ships],
 }));
