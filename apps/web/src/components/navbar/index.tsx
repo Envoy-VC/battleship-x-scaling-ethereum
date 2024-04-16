@@ -6,6 +6,8 @@ import { useIsMounted } from 'usehooks-ts';
 
 import { ConnectButton } from '~/components/connect';
 
+import StartGame from '../StartGame';
+
 const Navbar = () => {
   const isMounted = useIsMounted();
 
@@ -17,6 +19,7 @@ const Navbar = () => {
       >
         Battleship-X
       </Link>
+      <StartGame />
       <ConnectButton />
     </div>
   );

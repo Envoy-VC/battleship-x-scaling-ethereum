@@ -10,6 +10,8 @@ load_dotenv()
 
 async def store_board(props: StoreBoardParams):
     cluster_id = os.getenv("NILLION_CLUSTER_ID")
+    admin = create_client("")
+    admin_user_id = admin.user_id()
     client = create_client(props.user_key)
 
     carrier, battleship, cruiser, submarine, destroyer = [], [], [], [], []
@@ -38,8 +40,7 @@ async def store_board(props: StoreBoardParams):
     })
 
     permissions = nillion.Permissions.default_for_user(client.user_id())
-    permissions.add_retrieve_permissions(set(
-        ["2a4jZD3Hj2VyMxRrNt9P2pX8S3SVfNgyXaqKjeQZUJfKXve4gRBA37stjrYqB3gS1jhDP5ejPZZns8ADpSDfWpDh"]))
+    permissions.add_retrieve_permissions(set([admin_user_id]))
 
     store_id = await client.store_secrets(
         cluster_id, None, secrets, permissions

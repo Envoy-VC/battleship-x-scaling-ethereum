@@ -1,0 +1,17 @@
+{
+	"name": "battleship-x-contracts",
+	"version": "1.0.0",
+	"description": "",
+	"directories": {
+		"lib": "lib",
+		"test": "test"
+	},
+	"scripts": {
+		"dev": "anvil --fork-url https://421614.rpc.thirdweb.com/",
+		"dev:deploy": "forge script script/Deploy.s.sol:DeployScript --fork-url http://localhost:8545 --broadcast",
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC"
+}

@@ -1,4 +1,9 @@
-import { checkConflict, getNewPosition, rotateShip } from '~/lib/helpers/game';
+import {
+  checkConflict,
+  getNewPosition,
+  getShipLength,
+  rotateShip,
+} from '~/lib/helpers/game';
 
 import { create } from 'zustand';
 
@@ -45,6 +50,7 @@ type GameActions = {
     position: [number, number]
   ) => 'start' | 'end' | null;
   setBoard: (res: GetBoardResponse) => void;
+  getBoard: () => GetBoardResponse;
 };
 
 export const useGameStore = create<GameState & GameActions>((set, get) => ({
@@ -91,11 +97,18 @@ export const useGameStore = create<GameState & GameActions>((set, get) => ({
     const ships = Object.keys(res) as ships[];
     ships.forEach((ship) => {
       const coordinates = res[ship];
-      const startX = Math.round((coordinates[0]! - 100) / 10);
-      const startY = (coordinates[0]! - 100) % 10;
-      const endX = Math.round((coordinates[-1]! - 100) / 10);
-      const endY = (coordinates[-1]! - 100) % 10;
-      const orientation = startX === endX ? 'horizontal' : 'vertical';
+      const l = coordinates.length;
+      const startX = parseInt(String(coordinates[0])[1]!);
+      const startY = parseInt(String(coordinates[0])[2]!);
+      const endX = parseInt(String(coordinates[l - 1])[1]!);
+      const endY = parseInt(String(coordinates[l - 1])[2]!);
+      console.log({
+        startX,
+        startY,
+        endX,
+        endY,
+      });
+      const orientation = startX === endX ? 'vertical' : 'horizontal';
       const pos: Position = {
         start: [startX, startY],
         end: [endX, endY],
@@ -103,5 +116,32 @@ export const useGameStore = create<GameState & GameActions>((set, get) => ({
       };
       set({ [ship.toLowerCase()]: pos });
     });
+  },
+  getBoard: () => {
+    const state = get();
+    const board: GetBoardResponse = {
+      carrier: [],
+      battleship: [],
+      cruiser: [],
+      submarine: [],
+      destroyer: [],
+    };
+    allShips.forEach((ship) => {
+      const pos = state[ship.toLowerCase() as ships];
+      // add all co-ordinates to array in format 1XY
+      if (pos.start[0] === -1) {
+        throw new Error(`Ship not placed: ${ship}`);
+      }
+      const start = parseInt(`1${pos.start[0]}${pos.start[1]}`);
+      const end = parseInt(`1${pos.end[0]}${pos.end[1]}`);
+      const orientation = Math.abs(end - start) > 6 ? 'vertical' : 'horizontal';
+      const init = start > end ? end : start;
+      const length = getShipLength(ship.toUpperCase() as ShipTypes);
+      for (let i = 0; i < length; i++) {
+        const adder = orientation === 'vertical' ? 10 : 1;
+        board[ship].push(init + adder * i);
+      }
+    });
+    return board;
   },
 }));

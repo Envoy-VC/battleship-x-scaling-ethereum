@@ -1,12 +1,19 @@
 import React from 'react';
 import { BarsScale } from 'react-svg-spinners';
 
+import { useRouter } from 'next/router';
+
+import { getUserKeyFromSnap } from '~/lib/helpers/nillion';
+
+import { BATTLESHIP_GAME_ABI } from '~/lib/abi';
 import { getBoard, storeBoard } from '~/lib/api';
+import { BATTLESHIP_GAME_ADDRESS } from '~/lib/constants.json';
 import { useGameStore } from '~/lib/stores';
 import { allShips } from '~/lib/stores/game-store';
 
 import { useQuery } from '@tanstack/react-query';
-import { useAccount } from 'wagmi';
+import { toast } from 'sonner';
+import { useAccount, useWriteContract } from 'wagmi';
 
 import { Board } from '~/components/game';
 import { Ship } from '~/components/game';
@@ -18,8 +25,12 @@ import { ShipTypes } from '~/types/game';
 interface Props extends GameScreenProps {}
 
 const GameNotStarted = ({ game }: Props) => {
+  const router = useRouter();
+  const { id } = router.query;
   const { address } = useAccount();
-  const { setBoard, isAtPosition } = useGameStore();
+  const { writeContractAsync } = useWriteContract();
+
+  const { setBoard, isAtPosition, getBoard: constructBoard } = useGameStore();
   if (!game) {
     return <></>;
   }
@@ -30,7 +41,7 @@ const GameNotStarted = ({ game }: Props) => {
 
   const storeId = player.storeId;
 
-  const result = useQuery({
+  useQuery({
     queryKey: ['user_board'],
     queryFn: async () => {
       if (storeId === '') {
@@ -39,6 +50,7 @@ const GameNotStarted = ({ game }: Props) => {
       const board = await getBoard({
         store_id: storeId,
       });
+      console.log(board);
 
       setBoard(board);
 
@@ -46,7 +58,33 @@ const GameNotStarted = ({ game }: Props) => {
     },
   });
 
-  const onPlaceShips = async () => {};
+  const onPlaceShips = async () => {
+    try {
+      const board = constructBoard();
+      const key = await getUserKeyFromSnap();
+      const user_key = key.user_key;
+
+      if (!user_key) {
+        throw new Error('Connect to Nillion');
+      }
+      console.log(user_key);
+      const { store_id } = await storeBoard({
+        ...board,
+        user_key,
+      });
+      console.log(store_id);
+      const player = playerType === 'player1' ? 0 : 1;
+      const gameId = BigInt(id?.at(0) as string);
+      await writeContractAsync({
+        address: BATTLESHIP_GAME_ADDRESS as `0x${string}`,
+        abi: BATTLESHIP_GAME_ABI,
+        functionName: 'setStoreId',
+        args: [player, gameId, store_id],
+      });
+    } catch (error) {
+      toast.error((error as Error).message);
+    }
+  };
   return (
     <div className='flex flex-col gap-4 max-w-screen-2xl mx-auto bg-white/80 p-6 rounded-xl my-12 justify-start'>
       <div className='flex flex-row items-center justify-between gap-3'>
@@ -77,7 +115,7 @@ const GameNotStarted = ({ game }: Props) => {
               );
             })}
           </div>
-          <Button>Place Ships</Button>
+          <Button onClick={onPlaceShips}>Place Ships</Button>
         </div>
       </div>
     </div>
