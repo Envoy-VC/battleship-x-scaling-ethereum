@@ -15,12 +15,13 @@ import {
 import { ShipTypes } from '~/types/game';
 
 interface Props {
+  isHit?: boolean;
   type: ShipTypes;
   x?: number;
   y?: number;
 }
 
-const Ship = ({ type, x = -1, y = -1 }: Props) => {
+const Ship = ({ type, x = -1, y = -1, isHit = false }: Props) => {
   const { rotateShip, isExtreme, getShip } = useGameStore();
   const { orientation } = getShip(type);
   const extreme = isExtreme(type, [x, y]);
@@ -60,7 +61,7 @@ const Ship = ({ type, x = -1, y = -1 }: Props) => {
   return (
     <ContextMenu>
       <ContextMenuTrigger>
-        <div className='flex w-full h-full'>
+        <div className='relative flex w-full h-full z-[2]'>
           <div
             // @ts-ignore
             ref={drag}
@@ -80,7 +81,13 @@ const Ship = ({ type, x = -1, y = -1 }: Props) => {
                 style={{
                   backgroundColor: getShipColor(type),
                 }}
-              ></div>
+              >
+                {isHit && (
+                  <div className='text-4xl flex justify-center items-center h-full'>
+                    💥
+                  </div>
+                )}
+              </div>
             )}
           </div>
         </div>
