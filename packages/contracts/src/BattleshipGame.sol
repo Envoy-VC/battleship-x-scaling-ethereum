@@ -14,8 +14,8 @@ contract BattleshipGame is Ownable, IBattleshipGame {
 
     function createGame(address _player1, address _player2) external {
         games[gameId] = Game({
-            player1: Player(_player1, "", new uint8[](100)),
-            player2: Player(_player2, "", new uint8[](100)),
+            player1: Player(_player1, "", new uint8[](100), 0),
+            player2: Player(_player2, "", new uint8[](100), 0),
             next_turn: PlayerType.Player1,
             hasStarted: false,
             hasEnded: false,
@@ -104,11 +104,13 @@ contract BattleshipGame is Ownable, IBattleshipGame {
 
         if (player == PlayerType.Player1) {
             checkDuplicate(game.player1.moves, move);
-            game.player1.moves.push(move);
+            game.player1.moves[game.player1.moveIndex] = move;
+            game.player1.moveIndex++;
             game.next_turn = PlayerType.Player2;
         } else {
             checkDuplicate(game.player2.moves, move);
-            game.player2.moves.push(move);
+            game.player2.moves[game.player2.moveIndex] = move;
+            game.player2.moveIndex++;
             game.next_turn = PlayerType.Player1;
         }
     }

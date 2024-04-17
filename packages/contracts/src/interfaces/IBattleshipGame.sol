@@ -10,6 +10,7 @@ struct Player {
     address playerAddress;
     string storeId;
     uint8[] moves;
+    uint8 moveIndex;
 }
 
 struct Game {
