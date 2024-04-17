@@ -1,13 +1,16 @@
 import uvicorn
+import asyncio
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from classes import ComputeParams, StoreBoardParams, RetrieveSecretsParams, GetBoardParams, StoreSecretParams, UpdateSecretParams
 
 
-from lib import compute, retrieve_secrets, get_board, store_board, store_secret, update_secret
+from lib import compute, retrieve_secrets, get_board, store_board, store_secret, update_secret, store_program
 
 app = FastAPI()
+
+PROGRAM_ID: str = "PROGRAM_ID"
 
 
 app.add_middleware(
@@ -68,4 +71,5 @@ async def get_board_endpoint(props: GetBoardParams):
 if __name__ == "__main__":
     config = uvicorn.Config(app, port=8000, reload=True)
     server = uvicorn.Server(config)
+    PROGRAM_ID = asyncio.run(store_program.store_program())
     server.run()

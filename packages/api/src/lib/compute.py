@@ -8,16 +8,16 @@ from lib.store_program import store_program
 from dotenv import load_dotenv
 load_dotenv()
 
+from main import PROGRAM_ID
+from helpers.client import create_client
 
 async def compute(userKey: str, props: ComputeParams):
     cluster_id = os.getenv("NILLION_CLUSTER_ID")
-
+    client = create_client(userKey)
     party_name = "Party1"
 
-    [program_id, client] = await store_program()
     party_id = client.party_id()
     party_id = client.party_id()
-    PROGRAM_ID = program_id
 
     carrier, battleship, cruiser, submarine, destroyer = [], [], [], [], []
 
