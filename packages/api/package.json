@@ -3,9 +3,8 @@
 	"version": "1.0.0",
 	"description": "",
 	"scripts": {
-		"dev:server": "pnpm start-server",
+		"dev": "pnpm start-server",
 		"dev:devnet": "pnpm start-devnet",
-		"dev": "pnpm start-devnet && pnpm start-server",
 		"start-devnet": "bash ./start-devnet.sh",
 		"start-server": "python src/main.py",
 		"stop": "pkill -9 -f nillion-devnet",
