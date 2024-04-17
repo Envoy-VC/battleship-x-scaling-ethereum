@@ -15,13 +15,14 @@ import {
 import { ShipTypes } from '~/types/game';
 
 interface Props {
-  isHit?: boolean;
+  isHit: boolean;
+  gameStarted: boolean;
   type: ShipTypes;
   x?: number;
   y?: number;
 }
 
-const Ship = ({ type, x = -1, y = -1, isHit = false }: Props) => {
+const Ship = ({ type, x = -1, y = -1, isHit, gameStarted }: Props) => {
   const { rotateShip, isExtreme, getShip } = useGameStore();
   const { orientation } = getShip(type);
   const extreme = isExtreme(type, [x, y]);
@@ -52,6 +53,7 @@ const Ship = ({ type, x = -1, y = -1, isHit = false }: Props) => {
   const [{ isDragging }, drag, preview] = useDrag(
     () => ({
       type: type,
+      canDrag: !gameStarted,
       collect: (monitor) => ({
         isDragging: !!monitor.isDragging(),
       }),

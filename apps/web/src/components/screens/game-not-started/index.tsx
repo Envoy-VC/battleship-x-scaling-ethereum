@@ -44,6 +44,7 @@ const GameNotStarted = ({ game }: Props) => {
   useQuery({
     queryKey: ['user_board'],
     queryFn: async () => {
+      console.log(game);
       if (storeId === '') {
         return null;
       }
@@ -100,7 +101,7 @@ const GameNotStarted = ({ game }: Props) => {
       </div>
 
       <div className='flex flex-row gap-4'>
-        <Board />
+        <Board moves={[]} isOpponent={false} gameStarted={false} />
         <div className='flex flex-col gap-2 py-2 justify-between'>
           <div className='flex flex-col gap-2 py-2'>
             {allShips.map((ship, index) => {
@@ -110,7 +111,14 @@ const GameNotStarted = ({ game }: Props) => {
                   key={index}
                   className='flex flex-col items-start gap-1 font-battleship text-3xl text-neutral-900'
                 >
-                  {type}:{isAtPosition(type, [-1, -1]) && <Ship type={type} />}
+                  {type}:
+                  {isAtPosition(type, [-1, -1]) && (
+                    <Ship
+                      type={type}
+                      gameStarted={game.hasStarted}
+                      isHit={false}
+                    />
+                  )}
                 </div>
               );
             })}

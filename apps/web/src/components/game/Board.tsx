@@ -3,10 +3,12 @@ import React from 'react';
 import BoardSquare from './BoardSquare';
 
 interface Props {
-  moves?: number[];
+  moves: number[];
+  isOpponent: boolean;
+  gameStarted: boolean;
 }
 
-const Board = ({ moves }: Props) => {
+const Board = ({ moves, isOpponent, gameStarted }: Props) => {
   const grid: boolean[][] = Array(10).fill(Array(10).fill(true));
 
   return (
@@ -17,7 +19,14 @@ const Board = ({ moves }: Props) => {
             {row.map((_, eleIdx) => {
               const isHit = (moves ?? []).includes(100 + eleIdx * 10 + rowIdx);
               return (
-                <BoardSquare key={eleIdx} x={eleIdx} y={rowIdx} isHit={isHit} />
+                <BoardSquare
+                  key={eleIdx}
+                  x={eleIdx}
+                  y={rowIdx}
+                  isHit={isHit}
+                  isOpponent={isOpponent}
+                  gameStarted={gameStarted}
+                />
               );
             })}
           </div>

@@ -11,12 +11,14 @@ import Ship from './Ship';
 import { ShipTypes } from '~/types/game';
 
 interface Props {
+  isOpponent: boolean;
+  gameStarted: boolean;
   isHit: boolean;
   x: number;
   y: number;
 }
 
-const BoardSquare = ({ x, y, isHit }: Props) => {
+const BoardSquare = ({ x, y, isHit, isOpponent, gameStarted }: Props) => {
   const { moveShip, isAtPosition } = useGameStore();
   const [{ isOver, canDrop }, drop] = useDrop<
     unknown,
@@ -34,7 +36,7 @@ const BoardSquare = ({ x, y, isHit }: Props) => {
         ShipTypes.SUBMARINE,
         ShipTypes.DESTROYER,
       ],
-      canDrop: () => true,
+      canDrop: () => !gameStarted,
       drop: (item, monitor) => {
         const type = monitor.getItemType() as ShipTypes;
         moveShip(type, [x, y]);
@@ -52,13 +54,20 @@ const BoardSquare = ({ x, y, isHit }: Props) => {
       // @ts-ignore
       ref={drop}
       className='aspect-square w-16 rounded-md bg-[#2f90f1] relative flex items-center justify-center'
- 
     >
       {isHit && <X className='z-[1] absolute text-red-400' strokeWidth={3} />}
       {allShips.map((ship) => {
         const type = ship.toUpperCase() as ShipTypes;
         if (isAtPosition(type, [x, y])) {
-          return <Ship type={type} x={x} y={y} isHit={isHit} />;
+          return (
+            <Ship
+              type={type}
+              x={x}
+              y={y}
+              isHit={isHit}
+              gameStarted={gameStarted}
+            />
+          );
         }
       })}
     </div>
