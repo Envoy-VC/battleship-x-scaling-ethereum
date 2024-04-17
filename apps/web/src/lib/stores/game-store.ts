@@ -102,12 +102,6 @@ export const useGameStore = create<GameState & GameActions>((set, get) => ({
       const startY = parseInt(String(coordinates[0])[2]!);
       const endX = parseInt(String(coordinates[l - 1])[1]!);
       const endY = parseInt(String(coordinates[l - 1])[2]!);
-      console.log({
-        startX,
-        startY,
-        endX,
-        endY,
-      });
       const orientation = startX === endX ? 'vertical' : 'horizontal';
       const pos: Position = {
         start: [startX, startY],
