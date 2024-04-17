@@ -6,6 +6,15 @@ import { X } from 'lucide-react';
 import { toast } from 'sonner';
 import { useWriteContract } from 'wagmi';
 
+import { Button } from '~/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '~/components/ui/dialog';
+
 import { GetBoardResponse } from '~/types/api';
 
 interface Props {
@@ -78,24 +87,39 @@ const OpponentBoard = ({
               );
               const isShipHit = ships.includes(parseInt(`1${rowIdx}${eleIdx}`));
               return (
-                <div
-                  className='aspect-square w-16 rounded-md bg-[#2f90f1] relative flex items-center justify-center'
-                  onClick={async () => {
-                    await attack(parseInt(`1${rowIdx}${eleIdx}`));
-                  }}
-                >
-                  {isHit && !isShipHit && (
-                    <X
-                      className='z-[1] absolute text-red-400'
-                      strokeWidth={3}
-                    />
-                  )}
-                  {isHit && isShipHit && (
-                    <div className='text-4xl flex justify-center items-center h-full'>
-                      💥
+                <Dialog>
+                  <DialogTrigger>
+                    <div className='aspect-square w-16 rounded-md bg-[#2f90f1] relative flex items-center justify-center'>
+                      {isHit && !isShipHit && (
+                        <X
+                          className='z-[1] absolute text-red-400'
+                          strokeWidth={3}
+                        />
+                      )}
+                      {isHit && isShipHit && (
+                        <div className='text-4xl flex justify-center items-center h-full'>
+                          💥
+                        </div>
+                      )}
                     </div>
-                  )}
-                </div>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>
+                        Are you sure you want to Attack{' '}
+                        {`${String.fromCharCode(65 + rowIdx)}${eleIdx + 1}`}?
+                      </DialogTitle>
+                      <Button
+                        disabled={isAttacking}
+                        onClick={async () => {
+                          await attack(parseInt(`1${rowIdx}${eleIdx}`));
+                        }}
+                      >
+                        Attack
+                      </Button>
+                    </DialogHeader>
+                  </DialogContent>
+                </Dialog>
               );
             })}
           </div>
