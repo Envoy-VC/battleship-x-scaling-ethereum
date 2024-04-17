@@ -59,7 +59,7 @@ const StartGame = () => {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button>Start Game</Button>
+        <Button>New Game</Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
