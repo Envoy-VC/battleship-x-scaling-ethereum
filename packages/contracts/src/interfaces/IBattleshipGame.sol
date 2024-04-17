@@ -28,10 +28,10 @@ error InvalidTurn();
 error GameEnded();
 error DuplicateMove();
 error GameAlreadyStarted();
+error UserNotFound();
 
 interface IBattleshipGame {
     function createGame(address _player1, address _player2) external;
     function setStoreId(PlayerType player, uint256 _gameId, string memory _storeId) external;
     function playMove(PlayerType player, uint256 _gameId, uint8 move) external;
-    function endGame(uint256 _gameId, address _winner) external;
 }

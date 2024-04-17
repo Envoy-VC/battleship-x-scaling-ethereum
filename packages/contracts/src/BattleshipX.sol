@@ -13,6 +13,9 @@ import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 
 import {BattleshipURI} from "./lib/BattleshipURI.sol";
 
+import "./interfaces/IBattleshipGame.sol";
+import "./lib/GameLibrary.sol";
+
 error ERC721OutOfBoundsIndex(address owner, uint256 index);
 error UsernameTaken();
 error NotANewUser();
@@ -22,13 +25,17 @@ struct User {
     bool taken;
 }
 
-contract BattleshipX is RMRKAbstractNestable, RMRKTokenURIPerToken, RMRKSoulbound {
+contract BattleshipX is RMRKAbstractNestable, RMRKTokenURIPerToken, RMRKSoulbound, IBattleshipGame {
     mapping(address owner => mapping(uint256 index => uint256)) public _ownedTokens;
     mapping(string username => User) public users;
     mapping(uint256 tokenId => uint256) private _ownedTokensIndex;
     uint256[] private _allTokens;
     mapping(uint256 tokenId => uint256) private _allTokensIndex;
     mapping(address => bool) private _autoAcceptCollection;
+
+    // Game
+    uint256 public gameId;
+    mapping(uint256 => Game) public games;
 
     // Constructor
     constructor(
@@ -99,6 +106,11 @@ contract BattleshipX is RMRKAbstractNestable, RMRKTokenURIPerToken, RMRKSoulboun
         if (balance > 0) revert NotANewUser();
     }
 
+    function existingUser(address _user) public view {
+        uint256 balance = balanceOf(_user);
+        if (balance == 0) revert UserNotFound();
+    }
+
     /**
      * @notice Used to withdraw the minting proceedings to a specified address.
      * @dev This function can only be called by the owner.
@@ -117,6 +129,77 @@ contract BattleshipX is RMRKAbstractNestable, RMRKTokenURIPerToken, RMRKSoulboun
     function _withdraw(address _address, uint256 _amount) private {
         (bool success,) = _address.call{value: _amount}("");
         require(success, "Transfer failed.");
+    }
+
+    function createGame(address _player1, address _player2) external {
+        existingUser(_player1);
+        existingUser(_player2);
+
+        games[gameId] = Game({
+            player1: Player(_player1, "", new uint8[](100), 0),
+            player2: Player(_player2, "", new uint8[](100), 0),
+            next_turn: PlayerType.Player1,
+            hasStarted: false,
+            hasEnded: false,
+            winner: address(0)
+        });
+
+        gameId++;
+    }
+
+    function startGame(uint256 _gameId) internal {
+        Game storage game = games[_gameId];
+        if (
+            keccak256(abi.encodePacked(game.player1.storeId)) != keccak256(abi.encodePacked(""))
+                && keccak256(abi.encodePacked(game.player2.storeId)) != keccak256(abi.encodePacked(""))
+        ) {
+            game.hasStarted = true;
+        }
+    }
+
+    function setStoreId(PlayerType player, uint256 _gameId, string memory _storeId) external {
+        Game storage game = games[_gameId];
+        if (game.hasStarted) {
+            revert GameAlreadyStarted();
+        }
+
+        if (player == PlayerType.Player1) {
+            GameLibrary.onlyPlayer(game, player);
+            game.player1.storeId = _storeId;
+        } else if (player == PlayerType.Player2) {
+            GameLibrary.onlyPlayer(game, player);
+            game.player2.storeId = _storeId;
+        } else {
+            revert InvalidPlayer();
+        }
+        startGame(_gameId);
+    }
+
+    function playMove(PlayerType player, uint256 _gameId, uint8 move) external {
+        Game storage game = games[_gameId];
+        if (game.hasEnded) {
+            revert GameEnded();
+        }
+
+        if (player != game.next_turn) {
+            revert InvalidTurn();
+        }
+
+        if (player == PlayerType.Player1) {
+            GameLibrary.onlyPlayer(game, player);
+            GameLibrary.checkDuplicate(game.player1.moves, move);
+            game.player1.moves[game.player1.moveIndex] = move;
+            game.player1.moveIndex++;
+            game.next_turn = PlayerType.Player2;
+        } else if (player == PlayerType.Player2) {
+            GameLibrary.onlyPlayer(game, player);
+            GameLibrary.checkDuplicate(game.player2.moves, move);
+            game.player2.moves[game.player2.moveIndex] = move;
+            game.player2.moveIndex++;
+            game.next_turn = PlayerType.Player1;
+        } else {
+            revert InvalidPlayer();
+        }
     }
 
     /**
