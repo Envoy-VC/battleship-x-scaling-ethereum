@@ -46,6 +46,7 @@ export const BATTLESHIP_GAME_ABI = [
           { name: 'playerAddress', type: 'address', internalType: 'address' },
           { name: 'storeId', type: 'string', internalType: 'string' },
           { name: 'moves', type: 'uint8[]', internalType: 'uint8[]' },
+          { name: 'moveIndex', type: 'uint8', internalType: 'uint8' },
         ],
       },
       {
@@ -56,6 +57,7 @@ export const BATTLESHIP_GAME_ABI = [
           { name: 'playerAddress', type: 'address', internalType: 'address' },
           { name: 'storeId', type: 'string', internalType: 'string' },
           { name: 'moves', type: 'uint8[]', internalType: 'uint8[]' },
+          { name: 'moveIndex', type: 'uint8', internalType: 'uint8' },
         ],
       },
       { name: 'next_turn', type: 'uint8', internalType: 'enum PlayerType' },
@@ -87,6 +89,7 @@ export const BATTLESHIP_GAME_ABI = [
               },
               { name: 'storeId', type: 'string', internalType: 'string' },
               { name: 'moves', type: 'uint8[]', internalType: 'uint8[]' },
+              { name: 'moveIndex', type: 'uint8', internalType: 'uint8' },
             ],
           },
           {
@@ -101,6 +104,7 @@ export const BATTLESHIP_GAME_ABI = [
               },
               { name: 'storeId', type: 'string', internalType: 'string' },
               { name: 'moves', type: 'uint8[]', internalType: 'uint8[]' },
+              { name: 'moveIndex', type: 'uint8', internalType: 'uint8' },
             ],
           },
           {

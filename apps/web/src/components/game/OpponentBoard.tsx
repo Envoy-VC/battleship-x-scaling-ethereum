@@ -1,16 +1,30 @@
 import React from 'react';
 
+import { battleShipContract } from '~/lib/viem';
+
 import { X } from 'lucide-react';
+import { toast } from 'sonner';
+import { useWriteContract } from 'wagmi';
 
 import { GetBoardResponse } from '~/types/api';
 
 interface Props {
+  gameId: bigint;
   moves: number[];
   board: GetBoardResponse;
   allowAttack: boolean;
+  playerType: number;
 }
 
-const OpponentBoard = ({ moves, board, allowAttack }: Props) => {
+const OpponentBoard = ({
+  moves,
+  board,
+  allowAttack,
+  playerType,
+  gameId,
+}: Props) => {
+  const [isAttacking, setIsAttacking] = React.useState<boolean>(false);
+  const { writeContractAsync } = useWriteContract();
   const grid: boolean[][] = Array(10).fill(Array(10).fill(true));
   const ships = [
     ...board.battleship,
@@ -20,7 +34,36 @@ const OpponentBoard = ({ moves, board, allowAttack }: Props) => {
     ...board.submarine,
   ];
 
+  const allShipsDestroyed = () => {
+    return ships.reduce((acc, ship) => acc && moves.includes(ship), true);
+  };
+
   const attack = async (pos: number) => {
+    if (!allowAttack) {
+      toast.error('Not allowed to attack');
+    }
+    if (allShipsDestroyed()) {
+      toast('All ships are destroyed');
+      return;
+    }
+
+    if (moves.includes(pos)) {
+      toast.error('Invalid Move');
+      return;
+    }
+    try {
+      setIsAttacking(true);
+
+      await writeContractAsync({
+        ...battleShipContract,
+        functionName: 'playMove',
+        args: [playerType, gameId, pos],
+      });
+    } catch (error) {
+      toast.error((error as Error).message);
+    } finally {
+      setIsAttacking(false);
+    }
     console.log(pos);
   };
 

@@ -1,5 +1,7 @@
 import React from 'react';
 
+import { useRouter } from 'next/router';
+
 import { getBoard } from '~/lib/api';
 import { useGameStore } from '~/lib/stores';
 
@@ -16,6 +18,9 @@ interface Props extends GameScreenProps {}
 type PlayerType = 'player1' | 'player2';
 
 const GameStarted = ({ game }: Props) => {
+  const router = useRouter();
+  const { id } = router.query;
+  const gameId = BigInt(id?.at(0) as string);
   const { setBoard } = useGameStore();
   const { address } = useAccount();
   if (!game) {
@@ -82,6 +87,8 @@ const GameStarted = ({ game }: Props) => {
             </div>
             {opponentBoard && (
               <OpponentBoard
+                gameId={gameId}
+                playerType={opponentType === 'player2' ? 1 : 0}
                 allowAttack={isMyTurn}
                 board={opponentBoard}
                 moves={game[playerType].moves as number[]}
