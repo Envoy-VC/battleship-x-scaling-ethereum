@@ -6,7 +6,7 @@
 		"dev": "pnpm start-server",
 		"dev:devnet": "pnpm start-devnet",
 		"start-devnet": "bash ./start-devnet.sh",
-		"start-server": "python src/main.py",
+		"start-server": "pnpm create-venv && python3 src/main.py",
 		"stop": "pkill -9 -f nillion-devnet",
 		"create-venv": "bash ./create-venv.sh source .venv/bin/activate && pip install -r requirements.txt"
 	},

@@ -1,3 +1,4 @@
+from helpers.client import create_client
 import os
 import py_nillion_client as nillion
 from classes import ComputeParams
@@ -8,12 +9,11 @@ from lib.store_program import store_program
 from dotenv import load_dotenv
 load_dotenv()
 
-from main import PROGRAM_ID
-from helpers.client import create_client
 
-async def compute(userKey: str, props: ComputeParams):
+async def compute(props: ComputeParams):
     cluster_id = os.getenv("NILLION_CLUSTER_ID")
-    client = create_client(userKey)
+    PROGRAM_ID = await store_program()
+    client = create_client(props.user_key)
     party_name = "Party1"
 
     party_id = client.party_id()
@@ -22,18 +22,23 @@ async def compute(userKey: str, props: ComputeParams):
     carrier, battleship, cruiser, submarine, destroyer = [], [], [], [], []
 
     for data in props.carrier:
+        print(f"Carrier: {data}")
         carrier.append(nillion.SecretInteger(data))
 
     for data in props.battleship:
+        print(f"Battleship: {data}")
         battleship.append(nillion.SecretInteger(data))
 
     for data in props.cruiser:
+        print(f"Cruiser: {data}")
         cruiser.append(nillion.SecretInteger(data))
 
     for data in props.submarine:
+        print(f"Submarine: {data}")
         submarine.append(nillion.SecretInteger(data))
 
     for data in props.destroyer:
+        print(f"Destroyer: {data}")
         destroyer.append(nillion.SecretInteger(data))
 
     secrets = nillion.Secrets({

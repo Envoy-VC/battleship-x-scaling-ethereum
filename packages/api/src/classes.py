@@ -29,7 +29,7 @@ class RetrieveSecretsParams(WithUserKey):
     type: str
 
 
-class ComputeParams(StoreSecretParams):
+class ComputeParams(StoreBoardParams):
     position: int
 
 
