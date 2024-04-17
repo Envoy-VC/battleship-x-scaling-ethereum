@@ -7,6 +7,8 @@ import { Connector, useAccount, useConnect } from 'wagmi';
 
 import { Button } from '~/components/ui/button';
 
+import AccountModal from './AccountModal';
+
 const ConnectButton = () => {
   const { isConnected } = useAccount();
   const { connectors, connect } = useConnect();
@@ -54,9 +56,7 @@ const ConnectButton = () => {
           Connect to Nillion
         </Button>
       )}
-      {isConnected && nillion.connectedToSnap && (
-        <Button variant='secondary'>Connected</Button>
-      )}
+      {isConnected && nillion.connectedToSnap && <AccountModal />}
     </div>
   );
 };

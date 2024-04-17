@@ -1,19 +1,20 @@
 import { BATTLESHIP_GAME_ADDRESS } from '~/lib/constants.json';
 
 import { cookieStorage, createConfig, createStorage, http } from 'wagmi';
-import { arbitrumSepolia, foundry } from 'wagmi/chains';
+import { arbitrumSepolia, foundry, mainnet } from 'wagmi/chains';
 import { injected } from 'wagmi/connectors';
 
 import { BATTLESHIP_GAME_ABI } from '../abi';
 
 export const config = createConfig({
-  chains: [foundry],
+  chains: [foundry, mainnet],
   ssr: true,
   storage: createStorage({
     storage: cookieStorage,
   }),
   connectors: [injected()],
   transports: {
+    [mainnet.id]: http(),
     [foundry.id]: http(),
   },
 });
