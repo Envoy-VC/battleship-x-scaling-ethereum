@@ -136,6 +136,10 @@ contract BattleshipX is RMRKAbstractNestable, RMRKTokenURIPerToken, RMRKSoulboun
     }
 
     function createGame(address _player1, address _player2) external {
+        if (_player1 == _player2) {
+            revert SamePlayer();
+        }
+
         existingUser(_player1);
         existingUser(_player2);
 

@@ -29,6 +29,7 @@ error GameEnded();
 error DuplicateMove();
 error GameAlreadyStarted();
 error UserNotFound();
+error SamePlayer();
 
 interface IBattleshipGame {
     function createGame(address _player1, address _player2) external;
