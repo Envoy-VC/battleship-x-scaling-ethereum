@@ -27,7 +27,7 @@ export type RetrieveSecretsParams = {
 
 export type ComputeParams = {
   position: number;
-} & StoreSecretParams;
+} & StoreBoardParams;
 
 export type GetBoardParams = {
   store_id: string;

@@ -1,5 +1,8 @@
 import React from 'react';
 
+import { getUserKeyFromSnap } from '~/lib/helpers/nillion';
+
+import { compute } from '~/lib/api';
 import { battleShipContract } from '~/lib/viem';
 
 import { X } from 'lucide-react';
@@ -21,6 +24,7 @@ interface Props {
   gameId: bigint;
   moves: number[];
   board: GetBoardResponse;
+  opponentBoard: GetBoardResponse;
   allowAttack: boolean;
   playerType: number;
 }
@@ -29,10 +33,12 @@ const OpponentBoard = ({
   moves,
   board,
   allowAttack,
+  opponentBoard,
   playerType,
   gameId,
 }: Props) => {
   const [isAttacking, setIsAttacking] = React.useState<boolean>(false);
+
   const { writeContractAsync } = useWriteContract();
   const grid: boolean[][] = Array(10).fill(Array(10).fill(true));
   const ships = [
@@ -49,31 +55,45 @@ const OpponentBoard = ({
 
   const attack = async (pos: number) => {
     if (!allowAttack) {
-      toast.error('Not allowed to attack');
+      throw new Error('Not allowed to attack');
     }
     if (allShipsDestroyed()) {
-      toast('All ships are destroyed');
-      return;
+      throw new Error('All ships are destroyed');
     }
 
     if (moves.includes(pos)) {
-      toast.error('Invalid Move');
-      return;
+      throw new Error('Already Attacked');
     }
     try {
       setIsAttacking(true);
+
+      const { user_key } = await getUserKeyFromSnap();
+      if (!user_key) return;
 
       await writeContractAsync({
         ...battleShipContract,
         functionName: 'playMove',
         args: [playerType, gameId, pos],
       });
+
+      const computePos = parseInt(`1${String(pos)[2]}${String(pos)[1]}`);
+
+      const { result } = await compute({
+        ...opponentBoard,
+        user_key,
+        position: computePos,
+      });
+      if (result === 0) {
+        toast.success('Successfully Hit a Ship');
+      } else {
+        toast.error('Missed');
+      }
     } catch (error) {
       toast.error((error as Error).message);
+      console.log(error);
     } finally {
       setIsAttacking(false);
     }
-    console.log(pos);
   };
 
   return (
@@ -83,9 +103,9 @@ const OpponentBoard = ({
           <div className='flex flex-row items-center gap-[2px]' key={rowIdx}>
             {row.map((_, eleIdx) => {
               const isHit = (moves ?? []).includes(
-                parseInt(`1${rowIdx}${eleIdx}`)
+                parseInt(`1${eleIdx}${rowIdx}`)
               );
-              const isShipHit = ships.includes(parseInt(`1${rowIdx}${eleIdx}`));
+              const isShipHit = ships.includes(parseInt(`1${eleIdx}${rowIdx}`));
               return (
                 <Dialog>
                   <DialogTrigger>
@@ -112,7 +132,7 @@ const OpponentBoard = ({
                       <Button
                         disabled={isAttacking}
                         onClick={async () => {
-                          await attack(parseInt(`1${rowIdx}${eleIdx}`));
+                          await attack(parseInt(`1${eleIdx}${rowIdx}`));
                         }}
                       >
                         Attack

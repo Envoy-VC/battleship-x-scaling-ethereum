@@ -27,7 +27,8 @@ const GameStarted = ({ game }: Props) => {
     return <></>;
   }
 
-  const [opponentBoard, setOB] = React.useState<GetBoardResponse | null>(null);
+  const [ob, setOB] = React.useState<GetBoardResponse | null>(null);
+  const [pb, setPb] = React.useState<GetBoardResponse | null>(null);
 
   const [playerType, opponentType]: [PlayerType, PlayerType] =
     game.player1.playerAddress === address
@@ -39,17 +40,14 @@ const GameStarted = ({ game }: Props) => {
   const isMyTurn = nextTurnMsg === 'Your turn';
 
   const { isPending } = useQuery({
-    queryKey: [
-      game[playerType].storeId,
-      game[opponentType].storeId,
-      'player_storeIds',
-    ],
+    queryKey: ['player_storeIds', game.player1.storeId, game.player2.storeId],
+    enabled: game.player1.storeId !== '' && game.player2.storeId !== '',
     queryFn: async () => {
       if (game[playerType].storeId === '') {
-        return {};
+        return;
       }
       if (game[opponentType].storeId === '') {
-        return {};
+        return;
       }
 
       const playerBoard = await getBoard({
@@ -59,10 +57,11 @@ const GameStarted = ({ game }: Props) => {
       const opponentBoard = await getBoard({
         store_id: game[opponentType].storeId,
       });
+
       setOB(opponentBoard);
+      setPb(playerBoard);
       setBoard(playerBoard);
     },
-    enabled: opponentBoard === null,
   });
 
   if (isPending) {
@@ -85,12 +84,13 @@ const GameStarted = ({ game }: Props) => {
             <div className='text-neutral-800 font-battleship text-3xl text-center'>
               Opponent
             </div>
-            {opponentBoard && (
+            {ob && pb && (
               <OpponentBoard
                 gameId={gameId}
-                playerType={opponentType === 'player2' ? 1 : 0}
+                playerType={opponentType === 'player2' ? 0 : 1}
                 allowAttack={isMyTurn}
-                board={opponentBoard}
+                board={ob}
+                opponentBoard={pb}
                 moves={game[playerType].moves as number[]}
               />
             )}
