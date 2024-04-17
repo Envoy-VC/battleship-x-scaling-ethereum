@@ -2,22 +2,10 @@ export const BATTLESHIP_GAME_ABI = [
   {
     type: 'constructor',
     inputs: [
-      {
-        name: 'collectionMetadata',
-        type: 'string',
-        internalType: 'string',
-      },
+      { name: 'collectionMetadata', type: 'string', internalType: 'string' },
       { name: 'maxSupply', type: 'uint256', internalType: 'uint256' },
-      {
-        name: 'royaltyRecipient',
-        type: 'address',
-        internalType: 'address',
-      },
-      {
-        name: 'royaltyPercentageBps',
-        type: 'uint16',
-        internalType: 'uint16',
-      },
+      { name: 'royaltyRecipient', type: 'address', internalType: 'address' },
+      { name: 'royaltyPercentageBps', type: 'uint16', internalType: 'uint16' },
     ],
     stateMutability: 'nonpayable',
   },
@@ -120,11 +108,7 @@ export const BATTLESHIP_GAME_ABI = [
         internalType: 'struct IERC7401.Child',
         components: [
           { name: 'tokenId', type: 'uint256', internalType: 'uint256' },
-          {
-            name: 'contractAddress',
-            type: 'address',
-            internalType: 'address',
-          },
+          { name: 'contractAddress', type: 'address', internalType: 'address' },
         ],
       },
     ],
@@ -141,11 +125,7 @@ export const BATTLESHIP_GAME_ABI = [
         internalType: 'struct IERC7401.Child[]',
         components: [
           { name: 'tokenId', type: 'uint256', internalType: 'uint256' },
-          {
-            name: 'contractAddress',
-            type: 'address',
-            internalType: 'address',
-          },
+          { name: 'contractAddress', type: 'address', internalType: 'address' },
         ],
       },
     ],
@@ -232,6 +212,55 @@ export const BATTLESHIP_GAME_ABI = [
     name: 'getApproved',
     inputs: [{ name: 'tokenId', type: 'uint256', internalType: 'uint256' }],
     outputs: [{ name: 'approved', type: 'address', internalType: 'address' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: 'getGame',
+    inputs: [{ name: '_gameId', type: 'uint256', internalType: 'uint256' }],
+    outputs: [
+      {
+        name: '',
+        type: 'tuple',
+        internalType: 'struct Game',
+        components: [
+          {
+            name: 'player1',
+            type: 'tuple',
+            internalType: 'struct Player',
+            components: [
+              {
+                name: 'playerAddress',
+                type: 'address',
+                internalType: 'address',
+              },
+              { name: 'storeId', type: 'string', internalType: 'string' },
+              { name: 'moves', type: 'uint8[]', internalType: 'uint8[]' },
+              { name: 'moveIndex', type: 'uint8', internalType: 'uint8' },
+            ],
+          },
+          {
+            name: 'player2',
+            type: 'tuple',
+            internalType: 'struct Player',
+            components: [
+              {
+                name: 'playerAddress',
+                type: 'address',
+                internalType: 'address',
+              },
+              { name: 'storeId', type: 'string', internalType: 'string' },
+              { name: 'moves', type: 'uint8[]', internalType: 'uint8[]' },
+              { name: 'moveIndex', type: 'uint8', internalType: 'uint8' },
+            ],
+          },
+          { name: 'next_turn', type: 'uint8', internalType: 'enum PlayerType' },
+          { name: 'hasStarted', type: 'bool', internalType: 'bool' },
+          { name: 'hasEnded', type: 'bool', internalType: 'bool' },
+          { name: 'winner', type: 'address', internalType: 'address' },
+        ],
+      },
+    ],
     stateMutability: 'view',
   },
   {
@@ -354,11 +383,7 @@ export const BATTLESHIP_GAME_ABI = [
         internalType: 'struct IERC7401.Child',
         components: [
           { name: 'tokenId', type: 'uint256', internalType: 'uint256' },
-          {
-            name: 'contractAddress',
-            type: 'address',
-            internalType: 'address',
-          },
+          { name: 'contractAddress', type: 'address', internalType: 'address' },
         ],
       },
     ],
@@ -375,11 +400,7 @@ export const BATTLESHIP_GAME_ABI = [
         internalType: 'struct IERC7401.Child[]',
         components: [
           { name: 'tokenId', type: 'uint256', internalType: 'uint256' },
-          {
-            name: 'contractAddress',
-            type: 'address',
-            internalType: 'address',
-          },
+          { name: 'contractAddress', type: 'address', internalType: 'address' },
         ],
       },
     ],
@@ -584,11 +605,7 @@ export const BATTLESHIP_GAME_ABI = [
     type: 'function',
     name: 'updateRoyaltyRecipient',
     inputs: [
-      {
-        name: 'newRoyaltyRecipient',
-        type: 'address',
-        internalType: 'address',
-      },
+      { name: 'newRoyaltyRecipient', type: 'address', internalType: 'address' },
     ],
     outputs: [],
     stateMutability: 'nonpayable',
@@ -674,12 +691,7 @@ export const BATTLESHIP_GAME_ABI = [
         indexed: true,
         internalType: 'address',
       },
-      {
-        name: 'approved',
-        type: 'bool',
-        indexed: false,
-        internalType: 'bool',
-      },
+      { name: 'approved', type: 'bool', indexed: false, internalType: 'bool' },
     ],
     anonymous: false,
   },
@@ -779,12 +791,7 @@ export const BATTLESHIP_GAME_ABI = [
         indexed: false,
         internalType: 'bool',
       },
-      {
-        name: 'toZero',
-        type: 'bool',
-        indexed: false,
-        internalType: 'bool',
-      },
+      { name: 'toZero', type: 'bool', indexed: false, internalType: 'bool' },
     ],
     anonymous: false,
   },
@@ -811,18 +818,8 @@ export const BATTLESHIP_GAME_ABI = [
     type: 'event',
     name: 'NestTransfer',
     inputs: [
-      {
-        name: 'from',
-        type: 'address',
-        indexed: true,
-        internalType: 'address',
-      },
-      {
-        name: 'to',
-        type: 'address',
-        indexed: true,
-        internalType: 'address',
-      },
+      { name: 'from', type: 'address', indexed: true, internalType: 'address' },
+      { name: 'to', type: 'address', indexed: true, internalType: 'address' },
       {
         name: 'fromTokenId',
         type: 'uint256',
@@ -867,18 +864,8 @@ export const BATTLESHIP_GAME_ABI = [
     type: 'event',
     name: 'Transfer',
     inputs: [
-      {
-        name: 'from',
-        type: 'address',
-        indexed: true,
-        internalType: 'address',
-      },
-      {
-        name: 'to',
-        type: 'address',
-        indexed: true,
-        internalType: 'address',
-      },
+      { name: 'from', type: 'address', indexed: true, internalType: 'address' },
+      { name: 'to', type: 'address', indexed: true, internalType: 'address' },
       {
         name: 'tokenId',
         type: 'uint256',
@@ -889,11 +876,7 @@ export const BATTLESHIP_GAME_ABI = [
     anonymous: false,
   },
   { type: 'error', name: 'DuplicateMove', inputs: [] },
-  {
-    type: 'error',
-    name: 'ERC721AddressZeroIsNotaValidOwner',
-    inputs: [],
-  },
+  { type: 'error', name: 'ERC721AddressZeroIsNotaValidOwner', inputs: [] },
   { type: 'error', name: 'ERC721ApprovalToCurrentOwner', inputs: [] },
   {
     type: 'error',
@@ -914,11 +897,7 @@ export const BATTLESHIP_GAME_ABI = [
   },
   { type: 'error', name: 'ERC721TokenAlreadyMinted', inputs: [] },
   { type: 'error', name: 'ERC721TransferFromIncorrectOwner', inputs: [] },
-  {
-    type: 'error',
-    name: 'ERC721TransferToNonReceiverImplementer',
-    inputs: [],
-  },
+  { type: 'error', name: 'ERC721TransferToNonReceiverImplementer', inputs: [] },
   { type: 'error', name: 'ERC721TransferToTheZeroAddress', inputs: [] },
   { type: 'error', name: 'GameAlreadyStarted', inputs: [] },
   { type: 'error', name: 'GameEnded', inputs: [] },

@@ -131,6 +131,10 @@ contract BattleshipX is RMRKAbstractNestable, RMRKTokenURIPerToken, RMRKSoulboun
         require(success, "Transfer failed.");
     }
 
+    function getGame(uint256 _gameId) external view returns (Game memory) {
+        return games[_gameId];
+    }
+
     function createGame(address _player1, address _player2) external {
         existingUser(_player1);
         existingUser(_player2);
