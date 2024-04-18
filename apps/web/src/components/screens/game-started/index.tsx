@@ -27,29 +27,26 @@ const GameStarted = ({ game }: Props) => {
     return <></>;
   }
 
-  const [ob, setOB] = React.useState<GetBoardResponse | null>(null);
-  const [pb, setPb] = React.useState<GetBoardResponse | null>(null);
+  // const [ob, setOB] = React.useState<GetBoardResponse | null>(null);
+  // const [pb, setPb] = React.useState<GetBoardResponse | null>(null);
 
   const [playerType, opponentType]: [PlayerType, PlayerType] =
     game.player1.playerAddress === address
       ? ['player1', 'player2']
       : ['player2', 'player1'];
 
+  const player = game[playerType];
+  const opponent = game[opponentType];
+
   const nextTurn = game.next_turn === 0 ? 'player1' : 'player2';
   const nextTurnMsg = playerType === nextTurn ? 'Your turn' : 'Opponent turn';
   const isMyTurn = nextTurnMsg === 'Your turn';
 
-  const { isPending } = useQuery({
-    queryKey: ['player_storeIds', game.player1.storeId, game.player2.storeId],
-    enabled: game.player1.storeId !== '' && game.player2.storeId !== '',
+  const { isPending, data } = useQuery({
+    queryKey: ['player_storeIds', player.storeId, opponent.storeId],
+    staleTime: 600000,
     queryFn: async () => {
-      if (game[playerType].storeId === '') {
-        return;
-      }
-      if (game[opponentType].storeId === '') {
-        return;
-      }
-
+      console.log(player)
       const playerBoard = await getBoard({
         store_id: game[playerType].storeId,
       });
@@ -58,9 +55,10 @@ const GameStarted = ({ game }: Props) => {
         store_id: game[opponentType].storeId,
       });
 
-      setOB(opponentBoard);
-      setPb(playerBoard);
+      const result = { opponent: opponentBoard, player: playerBoard };
+      console.log(result);
       setBoard(playerBoard);
+      return result;
     },
   });
 
@@ -84,13 +82,12 @@ const GameStarted = ({ game }: Props) => {
             <div className='text-neutral-800 font-battleship text-3xl text-center'>
               Opponent
             </div>
-            {ob && pb && (
+            {data && (
               <OpponentBoard
                 gameId={gameId}
                 playerType={opponentType === 'player2' ? 0 : 1}
                 allowAttack={isMyTurn}
-                board={ob}
-                opponentBoard={pb}
+                boards={data}
                 moves={game[playerType].moves as number[]}
               />
             )}

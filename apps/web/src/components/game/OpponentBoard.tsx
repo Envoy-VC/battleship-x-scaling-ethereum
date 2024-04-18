@@ -5,35 +5,33 @@ import { getUserKeyFromSnap } from '~/lib/helpers/nillion';
 import { compute } from '~/lib/api';
 import { battleShipContract } from '~/lib/viem';
 
+import { OffChainSignType, SignProtocolClient, SpMode } from '@ethsign/sp-sdk';
 import { X } from 'lucide-react';
 import { toast } from 'sonner';
 import { useWriteContract } from 'wagmi';
 
 import { Button } from '~/components/ui/button';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '~/components/ui/dialog';
+import { Dialog, DialogContent, DialogTrigger } from '~/components/ui/dialog';
 
 import { GetBoardResponse } from '~/types/api';
+
+const SCHEMA_ID = 'SPS_So1kJ9cJQsKhjr0NqiVnq';
 
 interface Props {
   gameId: bigint;
   moves: number[];
-  board: GetBoardResponse;
-  opponentBoard: GetBoardResponse;
+  boards: {
+    player: GetBoardResponse;
+    opponent: GetBoardResponse;
+  };
   allowAttack: boolean;
   playerType: number;
 }
 
 const OpponentBoard = ({
   moves,
-  board,
+  boards,
   allowAttack,
-  opponentBoard,
   playerType,
   gameId,
 }: Props) => {
@@ -42,11 +40,11 @@ const OpponentBoard = ({
   const { writeContractAsync } = useWriteContract();
   const grid: boolean[][] = Array(10).fill(Array(10).fill(true));
   const ships = [
-    ...board.battleship,
-    ...board.carrier,
-    ...board.cruiser,
-    ...board.destroyer,
-    ...board.submarine,
+    ...boards.opponent.battleship,
+    ...boards.opponent.carrier,
+    ...boards.opponent.cruiser,
+    ...boards.opponent.destroyer,
+    ...boards.opponent.submarine,
   ];
 
   const allShipsDestroyed = () => {
@@ -54,21 +52,35 @@ const OpponentBoard = ({
   };
 
   const attack = async (pos: number) => {
-    if (!allowAttack) {
-      throw new Error('Not allowed to attack');
-    }
-    if (allShipsDestroyed()) {
-      throw new Error('All ships are destroyed');
-    }
-
-    if (moves.includes(pos)) {
-      throw new Error('Already Attacked');
-    }
     try {
+      if (!allowAttack) {
+        throw new Error('Not allowed to attack');
+      }
+      if (allShipsDestroyed()) {
+        throw new Error('All ships are destroyed');
+      }
+
+      if (moves.includes(pos)) {
+        throw new Error('Already Attacked');
+      }
       setIsAttacking(true);
 
       const { user_key } = await getUserKeyFromSnap();
       if (!user_key) return;
+
+      // const client = new SignProtocolClient(SpMode.OffChain, {
+      //   signType: OffChainSignType.EvmEip712,
+      // });
+
+      // const res = await client.createAttestation({
+      //   schemaId: SCHEMA_ID,
+      //   data: {
+      //     gameId,
+      //     playerType,
+      //     position: pos,
+      //   },
+      //   indexingValue: `${gameId.toString()}-${playerType.toString()}-${pos.toString()}`,
+      // });
 
       await writeContractAsync({
         ...battleShipContract,
@@ -76,12 +88,10 @@ const OpponentBoard = ({
         args: [playerType, gameId, pos],
       });
 
-      const computePos = parseInt(`1${String(pos)[2]}${String(pos)[1]}`);
-
       const { result } = await compute({
-        ...opponentBoard,
+        ...boards.opponent,
         user_key,
-        position: computePos,
+        position: pos,
       });
       if (result === 0) {
         toast.success('Successfully Hit a Ship');
@@ -124,20 +134,20 @@ const OpponentBoard = ({
                     </div>
                   </DialogTrigger>
                   <DialogContent>
-                    <DialogHeader>
-                      <DialogTitle>
+                    <div className='flex flex-col gap-3'>
+                      <div className='text-lg font-semibold'>
                         Are you sure you want to Attack{' '}
                         {`${String.fromCharCode(65 + rowIdx)}${eleIdx + 1}`}?
-                      </DialogTitle>
+                      </div>
                       <Button
                         disabled={isAttacking}
                         onClick={async () => {
                           await attack(parseInt(`1${eleIdx}${rowIdx}`));
                         }}
                       >
-                        Attack
+                        {isAttacking ? 'Attacking...' : 'Attack'}
                       </Button>
-                    </DialogHeader>
+                    </div>
                   </DialogContent>
                 </Dialog>
               );

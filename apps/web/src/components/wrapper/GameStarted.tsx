@@ -6,8 +6,12 @@ import { BATTLESHIP_GAME_ADDRESS } from '~/lib/constants.json';
 import { AbiParameterToPrimitiveType } from 'abitype';
 import { useAccount, useReadContracts } from 'wagmi';
 
+const GetGameABI = Array.from(BATTLESHIP_GAME_ABI).find(
+  (a) => a.type === 'function' && a.name === 'getGame'
+)!;
+
 export type GameType = AbiParameterToPrimitiveType<
-  (typeof BATTLESHIP_GAME_ABI)['5']['outputs']['0']
+  (typeof GetGameABI)['outputs']['0']
 >;
 
 // other props any number of props
@@ -41,6 +45,10 @@ const GameWrapper = ({ gameId, Started, NotStarted, Ended }: Props) => {
   });
 
   const game = result?.data?.[0].result;
+
+  if (!game) {
+    return <></>;
+  }
   const hasStarted = game?.hasStarted;
   const hasEnded = game?.hasEnded;
   const isPlayer =
