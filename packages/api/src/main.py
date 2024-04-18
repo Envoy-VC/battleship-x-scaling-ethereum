@@ -1,12 +1,12 @@
 import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+import asyncio
 
 from classes import ComputeParams, StoreBoardParams, RetrieveSecretsParams, GetBoardParams, StoreSecretParams, UpdateSecretParams
 
 
-from lib import compute, retrieve_secrets, get_board, store_board, store_secret, update_secret
-
+from lib import compute, retrieve_secrets, get_board, store_board, store_secret, update_secret, store_program
 app = FastAPI()
 
 
@@ -17,6 +17,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+PROGRAM_ID = ""
 
 
 @app.get("/")
@@ -49,7 +51,7 @@ async def update_secret_endpoint(props: UpdateSecretParams):
 
 @app.post('/compute')
 async def compute_endpoint(props: ComputeParams):
-    result = await compute.compute(props)
+    result = await compute.compute(PROGRAM_ID, props)
     return {"result": result}
 
 
@@ -61,11 +63,22 @@ async def retrieve_secret(props: RetrieveSecretsParams):
 
 @app.post('/get-board')
 async def get_board_endpoint(props: GetBoardParams):
-    result = await get_board.get_board(props)
-    return result
+    print(props.store_id)
+    try:
+        result = await get_board.get_board(props)
+        return result
+    except Exception as e:
+        print(e)
+        return {"error": str(e)}
+
+
+async def store():
+    global PROGRAM_ID
+    PROGRAM_ID = await store_program.store_program()
 
 
 if __name__ == "__main__":
+    asyncio.run(store())
     config = uvicorn.Config(app, port=8000, reload=True)
     server = uvicorn.Server(config)
     server.run()
