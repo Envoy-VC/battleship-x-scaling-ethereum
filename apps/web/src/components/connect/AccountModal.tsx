@@ -6,6 +6,7 @@ import { useAccount, useEnsAvatar, useEnsName } from 'wagmi';
 
 import { Dialog, DialogContent, DialogTrigger } from '~/components/ui/dialog';
 
+import RegisterProfile from '../RegisterProfile';
 import { Button } from '../ui/button';
 
 const shorten = (str: string) => {
@@ -65,6 +66,7 @@ const AccountModal = () => {
                 <Copy size={16} className='p-0' />
               </Button>
             </div>
+            <RegisterProfile />
           </div>
         </DialogContent>
       </Dialog>

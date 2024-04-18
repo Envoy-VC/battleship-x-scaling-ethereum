@@ -27,11 +27,39 @@ export const BATTLESHIP_GAME_ABI = [
   },
   {
     type: 'function',
+    name: '_allTokens',
+    inputs: [{ name: '', type: 'uint256', internalType: 'uint256' }],
+    outputs: [{ name: '', type: 'uint256', internalType: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: '_allTokensIndex',
+    inputs: [{ name: 'tokenId', type: 'uint256', internalType: 'uint256' }],
+    outputs: [{ name: '', type: 'uint256', internalType: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: '_autoAcceptCollection',
+    inputs: [{ name: '', type: 'address', internalType: 'address' }],
+    outputs: [{ name: '', type: 'bool', internalType: 'bool' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
     name: '_ownedTokens',
     inputs: [
       { name: 'owner', type: 'address', internalType: 'address' },
       { name: 'index', type: 'uint256', internalType: 'uint256' },
     ],
+    outputs: [{ name: '', type: 'uint256', internalType: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: '_ownedTokensIndex',
+    inputs: [{ name: 'tokenId', type: 'uint256', internalType: 'uint256' }],
     outputs: [{ name: '', type: 'uint256', internalType: 'uint256' }],
     stateMutability: 'view',
   },
@@ -938,6 +966,7 @@ export const BATTLESHIP_GAME_ABI = [
   { type: 'error', name: 'RMRKRoyaltiesTooHigh', inputs: [] },
   { type: 'error', name: 'RMRKUnexpectedChildId', inputs: [] },
   { type: 'error', name: 'RMRKUnexpectedNumberOfChildren', inputs: [] },
+  { type: 'error', name: 'SamePlayer', inputs: [] },
   { type: 'error', name: 'UserNotFound', inputs: [] },
   { type: 'error', name: 'UsernameTaken', inputs: [] },
 ] as const;
