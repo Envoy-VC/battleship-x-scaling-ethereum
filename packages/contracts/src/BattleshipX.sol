@@ -28,10 +28,10 @@ struct User {
 contract BattleshipX is RMRKAbstractNestable, RMRKTokenURIPerToken, RMRKSoulbound, IBattleshipGame {
     mapping(address owner => mapping(uint256 index => uint256)) public _ownedTokens;
     mapping(string username => User) public users;
-    mapping(uint256 tokenId => uint256) private _ownedTokensIndex;
-    uint256[] private _allTokens;
-    mapping(uint256 tokenId => uint256) private _allTokensIndex;
-    mapping(address => bool) private _autoAcceptCollection;
+    mapping(uint256 tokenId => uint256) public _ownedTokensIndex;
+    uint256[] public _allTokens;
+    mapping(uint256 tokenId => uint256) public _allTokensIndex;
+    mapping(address => bool) public _autoAcceptCollection;
 
     // Game
     uint256 public gameId;
@@ -66,7 +66,7 @@ contract BattleshipX is RMRKAbstractNestable, RMRKTokenURIPerToken, RMRKSoulboun
 
         // Mint the User NFT
         (uint256 userTokenId,) = _prepareMint(1);
-        string memory userURI = BattleshipURI.constructUserURI();
+        string memory userURI = BattleshipURI.constructUserURI(username, userTokenId);
         _safeMint(_user, userTokenId, "");
         _setTokenURI(userTokenId, userURI);
 

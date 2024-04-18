@@ -12,6 +12,7 @@ contract DeployScript is Script {
         vm.startBroadcast(deployerPrivateKey);
 
         BattleshipX battleship = new BattleshipX("", 10000, deployerAddress, 3);
+        battleship.setAutoAcceptCollection(address(battleship), true);
         console2.log("BattleshipX deployed at", address(battleship));
 
         string memory path = "../../apps/web/src/lib/constants.json";

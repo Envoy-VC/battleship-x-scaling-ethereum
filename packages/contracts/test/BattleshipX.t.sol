@@ -5,6 +5,8 @@ import {Test, console2} from "forge-std/Test.sol";
 
 import {VmSafe} from "forge-std/Vm.sol";
 import {BattleshipX} from "../src/BattleshipX.sol";
+import {BattleshipURI} from "../src/lib/BattleshipURI.sol";
+
 import {MockRMRKRegistry} from "../src/mocks/MOCKRMRKRegistry.sol";
 import {IERC7401} from "@rmrk-team/evm-contracts/contracts/RMRK/nestable/IERC7401.sol";
 
@@ -34,5 +36,10 @@ contract CounterTest is Test {
             console2.log("Token Id: ", children[i].tokenId);
         }
         assertEq(children.length, 5);
+    }
+
+    function test_uri() external {
+        string memory uri = BattleshipURI.constructUserURI("envoy1084", 1);
+        console2.log(uri);
     }
 }
