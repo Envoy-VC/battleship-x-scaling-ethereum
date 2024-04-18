@@ -11,6 +11,7 @@
     "format": "prettier . --write --cache"
   },
   "dependencies": {
+    "@ethsign/sp-sdk": "^0.3.29",
     "@nillion/nillion-client-js-browser": "^0.1.1",
     "@radix-ui/react-avatar": "^1.0.4",
     "@radix-ui/react-context-menu": "^2.1.5",
