@@ -1,81 +1,102 @@
-# Turborepo starter
+# ⛴️ BattleshipX
 
-This is an official starter Turborepo.
+BattleShipX is a secure and private battleship game that can be played with friends. It uses nillion for storing the game state and and blind computation for the game logic.
 
-## Using this example
+This project is submission for Scaling Ethereum 2024.
 
-Run the following command:
-
-```sh
-npx create-turbo@latest
-```
-
-## What's inside?
-
-This Turborepo includes the following packages/apps:
-
-### Apps and Packages
-
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
-
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
-
-### Utilities
-
-This Turborepo has some additional tools already setup for you:
-
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
-
-### Build
-
-To build all apps and packages, run the following command:
+The contracts have been deployed to Arbitrum Sepolia Testnet.
 
 ```
-cd my-turborepo
-pnpm build
+BattleshipX: 0xe86b1899376c77e1a109ea2124e462ef58e56897
+BattleshipURI Library: 0x8f966BC6Ad2D241a01C1f7634C47c7419Ce96830
 ```
 
-### Develop
+https://sepolia.arbiscan.io/address/0xe86b1899376c77e1a109ea2124e462ef58e56897
+https://sepolia.arbiscan.io/address/0x8f966BC6Ad2D241a01C1f7634C47c7419Ce96830
 
-To develop all apps and packages, run the following command:
+## How it works?
 
+First user create a profile for the game, using a unique username. The profile is a custom implementation of [ERC-7401: Parent-Governed Non-Fungible Tokens Nesting](https://eips.ethereum.org/EIPS/eip-7401) which brings nestable NFTs to Ethereum.
+
+The main NFT is a on-chain profile NFT which has abilities to track users' game history, stats and other metadata. The profile NFT can have multiple child NFTs which are the game NFTs. These Game NFTs the Battleship Ships the user has eg- Battleship, Cruiser, Destroyer, Submarine and Carrier.
+
+The game logic is computed using blind computation. The game state is stored in nillion. The game state is encrypted and stored in nillion
+
+The game is played in a turn based manner made using Next.js, React DND, wagmi as the major tech stack.
+There are also custom solidity contracts for the profile and game management, and a minimal FastAPI server for interacting with nillion and the game.
+
+## How Computations are done?
+
+While storing the secret game state in nillion, it is stored as follows:
+
+```json
+{
+	"carrier": [101, 102, 103, 104, 105],
+	"battleship": [112, 113, 114, 115],
+	"cruiser": [121, 122, 123],
+	"submarine": [165, 175, 185],
+	"destroyer": [191, 192]
+}
 ```
-cd my-turborepo
+
+where each number is `1XY` where `X` is the row number and `Y` is the column number. The game state is stored in nillion in encrypted form. `X` and `Y` are in range of 0-9.
+
+**Why extra `1` at start?** The extra `1` is added to make the number 3 digit as zero at the X position will be ignored by the game logic.
+
+When a user attacks a position, the user sends the position to the contract.
+
+For Example: User attacks position `7, 5`. The contract will compute the attack with position `175`, the computation starts at `1` and multiplies it by `(value - position)`
+
+This is done through `Array.reduce` method. The logic is if there is a ship at that position, somewhere in the computation `value == position` and the result becomes `0`. If the result is `0`, the user has hit the ship.
+
+## How to run?
+
+The following repository is a turborepo and divided into the following:
+
+1. `apps/web` - The web application for the game.
+2. `packages/nillion` - The nillion contract for computation.
+3. `packages/contracts` - The Custom Game contract with ERC-7401 implementation.
+4. `packages/api` - A minimal FastAPI server for interacting with nillion and the game.
+
+To run the project, you need to have the following:
+
+1. Node.js
+2. nillion
+3. foundry
+4. Python 3.11
+
+First start by going to the `packages/api` directory and running the following:
+
+```bash
+pnpm devnet
+```
+
+This will start a local nillion devnet and also write the environment variables to `.env` file in the `api` directory.
+
+Then in another terminal, start the python server by running:
+
+```bash
 pnpm dev
 ```
 
-### Remote Caching
+This will start the FastAPI server.
 
-Turborepo can use a technique known as [Remote Caching](https://turbo.build/repo/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
+If you want to run you application on a local anvil instance, in a new terminal run:
 
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup), then enter the following commands:
-
-```
-cd my-turborepo
-npx turbo login
+```bash
+anvil
 ```
 
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
+and then deploy the contracts by going to the `packages/contracts` directory and running:
 
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
-
-```
-npx turbo link
+```bash
+pnpm deploy
 ```
 
-## Useful Links
+At last run the web application by going to the `apps/web` directory and running:
 
-Learn more about the power of Turborepo:
+```bash
+pnpm dev
+```
 
-- [Tasks](https://turbo.build/repo/docs/core-concepts/monorepos/running-tasks)
-- [Caching](https://turbo.build/repo/docs/core-concepts/caching)
-- [Remote Caching](https://turbo.build/repo/docs/core-concepts/remote-caching)
-- [Filtering](https://turbo.build/repo/docs/core-concepts/monorepos/filtering)
-- [Configuration Options](https://turbo.build/repo/docs/reference/configuration)
-- [CLI Usage](https://turbo.build/repo/docs/reference/command-line-reference)
+Make sure you have Foundry added to you metamask and you are connected to the local network.
