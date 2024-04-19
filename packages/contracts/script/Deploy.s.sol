@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: UNLICENSED
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.13;
 
 import "forge-std/Script.sol";
@@ -7,11 +7,13 @@ import {BattleshipX} from "../src/BattleshipX.sol";
 
 contract DeployScript is Script {
     function run() external {
-        uint256 deployerPrivateKey = vm.parseUint("0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80");
+        uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
         address deployerAddress = vm.addr(deployerPrivateKey);
         vm.startBroadcast(deployerPrivateKey);
 
-        BattleshipX battleship = new BattleshipX("", 10000, deployerAddress, 3);
+        console.log("Deploying BattleshipX with deployer address", deployerAddress);
+
+        BattleshipX battleship = new BattleshipX("", 10000, deployerAddress, 0);
         battleship.setAutoAcceptCollection(address(battleship), true);
         console2.log("BattleshipX deployed at", address(battleship));
 
