@@ -3,12 +3,12 @@ import React from 'react';
 import { getUserKeyFromSnap } from '~/lib/helpers/nillion';
 
 import { compute } from '~/lib/api';
-import { allShips } from '~/lib/stores/game-store';
 import { battleShipContract } from '~/lib/viem';
 
-import { OffChainSignType, SignProtocolClient, SpMode } from '@ethsign/sp-sdk';
+import { EvmChains, SignProtocolClient, SpMode } from '@ethsign/sp-sdk';
 import { X } from 'lucide-react';
 import { toast } from 'sonner';
+import { useChainId } from 'wagmi';
 import { useWriteContract } from 'wagmi';
 
 import { Button } from '~/components/ui/button';
@@ -37,7 +37,7 @@ const OpponentBoard = ({
   gameId,
 }: Props) => {
   const [isAttacking, setIsAttacking] = React.useState<boolean>(false);
-
+  const chain = useChainId();
   const { writeContractAsync } = useWriteContract();
   const grid: boolean[][] = Array(10).fill(Array(10).fill(true));
   const ships = [
@@ -69,19 +69,21 @@ const OpponentBoard = ({
       const { user_key } = await getUserKeyFromSnap();
       if (!user_key) return;
 
-      // const client = new SignProtocolClient(SpMode.OffChain, {
-      //   signType: OffChainSignType.EvmEip712,
-      // });
+      if (chain === 421614) {
+        const client = new SignProtocolClient(SpMode.OnChain, {
+          chain: EvmChains.arbitrumSepolia,
+        });
 
-      // const res = await client.createAttestation({
-      //   schemaId: SCHEMA_ID,
-      //   data: {
-      //     gameId,
-      //     playerType,
-      //     position: pos,
-      //   },
-      //   indexingValue: `${gameId.toString()}-${playerType.toString()}-${pos.toString()}`,
-      // });
+        const res = await client.createAttestation({
+          schemaId: SCHEMA_ID,
+          data: {
+            gameId,
+            playerType,
+            position: pos,
+          },
+          indexingValue: `${gameId.toString()}-${playerType.toString()}-${pos.toString()}`,
+        });
+      }
 
       await writeContractAsync({
         ...battleShipContract,
