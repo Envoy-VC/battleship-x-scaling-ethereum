@@ -3,16 +3,30 @@ import React from 'react';
 import { BATTLESHIP_GAME_ABI } from '~/lib/abi';
 import { BATTLESHIP_GAME_ADDRESS } from '~/lib/constants.json';
 
-import { AbiParameterToPrimitiveType } from 'abitype';
 import { useAccount, useReadContracts } from 'wagmi';
 
 const GetGameABI = Array.from(BATTLESHIP_GAME_ABI).find(
   (a) => a.type === 'function' && a.name === 'getGame'
 )!;
 
-export type GameType = AbiParameterToPrimitiveType<
-  (typeof GetGameABI)['outputs']['0']
->;
+export type GameType = {
+  player1: {
+    playerAddress: `0x${string}`;
+    storeId: string;
+    moves: readonly number[];
+    moveIndex: number;
+  };
+  player2: {
+    playerAddress: `0x${string}`;
+    storeId: string;
+    moves: readonly number[];
+    moveIndex: number;
+  };
+  next_turn: number;
+  hasStarted: boolean;
+  hasEnded: boolean;
+  winner: `0x${string}`;
+};
 
 // other props any number of props
 export interface GameScreenProps {
