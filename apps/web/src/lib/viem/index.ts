@@ -7,7 +7,7 @@ import { injected } from 'wagmi/connectors';
 import { BATTLESHIP_GAME_ABI } from '../abi';
 
 export const config = createConfig({
-  chains: [foundry, mainnet],
+  chains: [foundry, mainnet, arbitrumSepolia],
   ssr: true,
   storage: createStorage({
     storage: cookieStorage,
@@ -16,6 +16,7 @@ export const config = createConfig({
   transports: {
     [mainnet.id]: http(),
     [foundry.id]: http(),
+    [arbitrumSepolia.id]: http(),
   },
 });
 

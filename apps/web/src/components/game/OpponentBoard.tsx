@@ -3,6 +3,7 @@ import React from 'react';
 import { getUserKeyFromSnap } from '~/lib/helpers/nillion';
 
 import { compute } from '~/lib/api';
+import { allShips } from '~/lib/stores/game-store';
 import { battleShipContract } from '~/lib/viem';
 
 import { OffChainSignType, SignProtocolClient, SpMode } from '@ethsign/sp-sdk';

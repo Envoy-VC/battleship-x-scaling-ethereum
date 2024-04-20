@@ -37,13 +37,15 @@ def nada_main():
 
     @nada_fn
     def check_exists(a: SecretInteger, b: SecretInteger) -> SecretInteger:
-        return a * (position - b)
+        return a * (b - position)
 
     result1 = carrier.reduce(check_exists, Integer(1))
     result2 = battleship.reduce(check_exists, result1)
     result3 = cruiser.reduce(check_exists, result2)
     result4 = submarine.reduce(check_exists, result3)
-    result = destroyer.reduce(check_exists, result4)
+    result5 = destroyer.reduce(check_exists, result4)
+
+    result = result5 * result5
 
     out = Output(result, "out", party1)
 
